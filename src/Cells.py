@@ -17,3 +17,6 @@ class Cell:
     @value.setter
     def value(self, val: "str"):
         self._value = val
+
+    def __eq__(self, other: "Cell") -> bool:
+        return (self.address == other.address)
