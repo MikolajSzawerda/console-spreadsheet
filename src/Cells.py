@@ -1,10 +1,10 @@
-from Addresses import Address
+from src.Addresses import Address
 
 
 class Cell:
-    def __init__(self, address: "Address", value):
+    def __init__(self, address: "Address", value: "str" = None):
         self._address = address
-        self._value = value
+        self._value = value if value else 0
 
     @property
     def address(self) -> "Address":

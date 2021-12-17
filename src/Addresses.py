@@ -21,6 +21,12 @@ class Address:
     def __str__(self) -> "str":
         return self._address
 
+    def __hash__(self):
+        return hash(str(self))
+
+    def __eq__(self, other: "Address"):
+        return (self._address == other._address)
+
     @staticmethod
     def _convert_to_xy(address: "str") -> "tuple[str, str]":
         splitted_address = re.split("(\d+)", address)
