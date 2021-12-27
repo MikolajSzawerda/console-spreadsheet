@@ -36,6 +36,12 @@ class Spreadsheet:
         except KeyError:
             raise CellNotInSpreadsheetError(adr._address) from KeyError
 
+    def cell(self, address: "Address"):
+        try:
+            return self.cells[address]
+        except KeyError:
+            return Cell(address)
+
     def set_cell_val(self, address: "Address", val: "str"):
         if address not in self.cells.keys():
             self.add_cells([Cell(address, val)])
