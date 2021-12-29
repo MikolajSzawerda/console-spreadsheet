@@ -1,5 +1,6 @@
 import re
 from src.Errors import UncorrectAddressAddressValue
+from src.utils import flat_range_addresses
 
 
 class Address:
@@ -39,3 +40,24 @@ class Address:
         if not (val[0].isalnum() and val[1].isdigit()):
             raise UncorrectAddressAddressValue(address)
         return True
+
+
+class RangeAddress:
+    def __init__(self, adrX: "Address" = None, adrY: "Address" = None):
+        self._adrX = adrX
+        self._adrY = adrY
+        self._addresses = []
+        if (adrX and adrY):
+            addresses = flat_range_addresses(adrX.x, int(adrX.y),
+                                             adrY.x, int(adrY.y))
+            self._addresses = [Address(x) for x in addresses]
+
+    @property
+    def addresses(self) -> 'list[Address]':
+        return self._addresses
+
+    @classmethod
+    def from_address_list(cls: "RangeAddress", addresses: "list[Address]"):
+        rA = cls()
+        rA._addresses = addresses
+        return rA

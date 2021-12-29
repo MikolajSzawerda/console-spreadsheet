@@ -37,10 +37,7 @@ class Spreadsheet:
             raise CellNotInSpreadsheetError(adr._address) from KeyError
 
     def cell(self, address: "Address"):
-        try:
-            return self.cells[address]
-        except KeyError:
-            return Cell(address)
+        return self.cells.get(address, Cell(address))
 
     def set_cell_val(self, address: "Address", val: "str"):
         if address not in self.cells.keys():
