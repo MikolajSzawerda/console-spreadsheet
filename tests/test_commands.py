@@ -77,3 +77,24 @@ def test_basic_numbers_operations():
     for test in tests:
         inter.parse_command(test[0])
         assert spr1.cell(Address('A1')).value == test[1]
+
+
+def test_commands_eval():
+    spr1 = Spreadsheet(cells=[Cell(Address('B1'), -5)])
+    inter = CommandInterpreter(spr1)
+    inter.parse_command('A1=min(A1:B4)')
+    assert spr1.cell(Address('A1')).value == -5
+
+
+def test_commands_with_operations_eval():
+    spr1 = Spreadsheet(cells=[
+        Cell(Address('B1'), 5),
+        Cell(Address('A1'), 4),
+        Cell(Address('E1'), -4),
+        Cell(Address('E2'), 6),
+        ])
+    inter = CommandInterpreter(spr1)
+    inter.parse_command('D1=max(A1:B4)+2')
+    assert spr1.cell(Address('D1')).value == 7
+    inter.parse_command('D2=sum(A1:B4)-min(E1:E2)')
+    assert spr1.cell(Address('D2')).value == 13

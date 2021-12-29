@@ -1,4 +1,4 @@
-from src.Addresses import Address
+from src.Addresses import Address, RangeAddress
 from src.Spreadsheets import Spreadsheet
 from config.commands_config import commands, commands_names
 from src.Errors import NoTargetCommandAddressError
@@ -42,18 +42,21 @@ class CommandInterpreter():
             return self._try_setting_text(command_stream)
         except AttributeError:
             pass
-        if self._check_number(command_stream):
-            number = 0
-            if '.' in command_stream:
-                number = float(command_stream)
-            else:
-                number = int(command_stream)
-            return number
         tokens = self.split_tokens(command_stream)
+        set_number = None
+        if self._check_number(command_stream):
+            set_number = self._convert_str_to_number(command_stream)
+        elif len(tokens) == 1 and self._check_number(tokens[0].string):
+            set_number = self._convert_str_to_number(tokens[0].string)
+        if set_number:
+            return set_number
         value = self._evaluate_expression(tokens)
         return value
 
     def _check_number(self, command_stream: "str"):
+        '''
+        Function checks if command is just a number
+        '''
         check_if_number = re.compile('^-?\d*\.?\d*$')
         return bool(re.match(check_if_number, command_stream))
 
@@ -87,6 +90,8 @@ class CommandInterpreter():
         op_st = []
         for token in tokens:
             if token.type in [1, 2]:
+                if token.string in commands_names:
+                    token = self._shell_command_data(token, tokens)
                 output.append(token)
             elif token.type == 54:
                 if op_st:
@@ -109,11 +114,7 @@ class CommandInterpreter():
                 except Exception:
                     pass
             elif token.type == 2:
-                number = 0
-                if '.' in token.string:
-                    number = float(token.string)
-                else:
-                    number = int(token.string)
+                number = self._convert_str_to_number(token.string)
                 nb_stack.append(number)
             elif token.type == 54:
                 func = commands[token.string]
@@ -121,5 +122,38 @@ class CommandInterpreter():
                 nb_stack.append(val)
         return nb_stack.pop()
 
-    def _calculate_command(self, command, addres_range):
-        pass
+    def _shell_command_data(self, token: "TokenInfo", tokens: "list[TokenInfo]"):
+        '''
+        Function shells needed data to calculate a command
+        '''
+        tp, start, end, ln = 2, token.start, token.end, token.line
+        func = commands[token.string]
+        next(tokens)
+        adrA = next(tokens)
+        next(tokens)
+        adrB = next(tokens)
+        next(tokens)
+        range_adr = RangeAddress(Address(adrA.string),
+                                 Address(adrB.string))
+        val = self._calculate_command(func, range_adr)
+        token = TokenInfo(tp, val, start, end, ln)
+        return token
+
+    def _calculate_command(self, command, addres_range: "RangeAddress"):
+        '''
+        Function takes values from spreadsheet, and applay numeric function
+        '''
+        adr = addres_range.addresses
+        values = [self.spreadsheet.cell(x).value for x in adr]
+        return str(command(values))
+
+    def _convert_str_to_number(self, text_number: "str"):
+        '''
+        Function converts string number for the most suitble data type
+        '''
+        number = 0
+        if '.' in text_number:
+            number = float(text_number)
+        else:
+            number = int(text_number)
+        return number

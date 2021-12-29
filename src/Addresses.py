@@ -57,7 +57,7 @@ class RangeAddress:
         return self._addresses
 
     @classmethod
-    def from_address_list(cls: "RangeAddress", addresses: "list[Address]"):
-        rA = cls()
-        rA._addresses = addresses
-        return rA
+    def from_address_list(cls: "RangeAddress", addresses: "list[Address]") -> "RangeAddress":
+        range_adr = cls()
+        range_adr._addresses = addresses
+        return range_adr

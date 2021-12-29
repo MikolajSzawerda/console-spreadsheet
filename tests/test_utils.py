@@ -23,3 +23,5 @@ def test_getting_flatted_address():
         'E4', 'E5', 'F4', 'F5', 'G4', 'G5', 'H4', 'H5',
         'I4', 'I5', 'J4', 'J5', 'K4', 'K5'
         ]
+    adr = flat_range_addresses('A', 1, 'A', 2)
+    assert adr == ['A1', 'A2']

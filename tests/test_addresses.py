@@ -1,4 +1,4 @@
-from src.Addresses import Address
+from src.Addresses import Address, RangeAddress
 from src.Errors import UncorrectAddressAddressValue
 import pytest
 
@@ -29,3 +29,18 @@ def test_wrong_addresses():
 
     with pytest.raises(UncorrectAddressAddressValue):
         Address('1234')
+
+
+def test_creating_range_address():
+    ra = RangeAddress(Address('A1'), Address('A2'))
+    assert ra.addresses == [Address('A1'), Address('A2')]
+    ra = RangeAddress(Address('A1'), Address('B2'))
+    assert ra.addresses == [
+        Address('A1'), Address('A2'), Address('B1'), Address('B2')
+        ]
+
+
+def test_creating_range_from_list():
+    adr_list = [Address('A1'), Address('B3'), Address('C4')]
+    range_adr = RangeAddress.from_address_list(adr_list)
+    assert range_adr.addresses == adr_list
