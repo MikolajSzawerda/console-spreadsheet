@@ -1,5 +1,6 @@
 from src.Addresses import Address, RangeAddress
 from src.Spreadsheets import Spreadsheet
+from src.Cells import Cell
 from config.commands_config import commands, commands_names
 from src.Errors import NoTargetCommandAddressError
 import re
@@ -30,8 +31,12 @@ class CommandInterpreter():
             raise NoTargetCommandAddressError from IndexError
         if len(tokens) == 1:
             return self.spreadsheet.cell(adr).value
+        cell = Cell(adr)
+        cell._raw_data = tokens[1]
         response = self.execute_command(tokens[1])
-        self.spreadsheet.set_cell_val(adr, response)
+        cell.value = response
+        self.spreadsheet.add_cells([cell])
+        self.update()
         return True
 
     def execute_command(self, command_stream: "str"):
@@ -53,6 +58,10 @@ class CommandInterpreter():
         value = self._evaluate_expression(tokens)
         return value
 
+    def update(self):
+        for cell in self.spreadsheet.cells.values():
+            cell.value = self.execute_command(cell._raw_data)
+
     def _check_number(self, command_stream: "str"):
         '''
         Function checks if command is just a number
@@ -65,7 +74,7 @@ class CommandInterpreter():
         Function checks if given command is text, not an arithmetic
         '''
         check_if_text = re.compile('^\"(.*)\"$')
-        return re.match(check_if_text, command_text).group(1)
+        return re.match(check_if_text, command_text).group(0)
 
     def split_tokens(self, command_stream: "str"):
         '''

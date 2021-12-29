@@ -5,6 +5,7 @@ class Cell:
     def __init__(self, address: "Address", value: "str" = None):
         self._address = address
         self._value = value if value else 0
+        self._raw_data = str(self._value)
 
     @property
     def address(self) -> "Address":

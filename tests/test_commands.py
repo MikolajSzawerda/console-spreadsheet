@@ -24,11 +24,11 @@ def test_setting_cell_text():
     spr1 = Spreadsheet()
     inter = CommandInterpreter(spr1)
     inter.parse_command('A1="3"')
-    assert spr1.cell(Address('A1')).value == '3'
+    assert spr1.cell(Address('A1')).value == '"3"'
     inter.parse_command('A1="5"')
-    assert spr1.cell(Address('A1')).value == '5'
+    assert spr1.cell(Address('A1')).value == '"5"'
     inter.parse_command('A1="very long uninteresting text"')
-    assert spr1.cell(Address('A1')).value == 'very long uninteresting text'
+    assert spr1.cell(Address('A1')).value == '"very long uninteresting text"'
 
 
 def test_checking_if_number():
@@ -64,7 +64,7 @@ def test_basic_numbers_operations():
         Cell(Address('A3'), -12),
         Cell(Address('B6'), 2),
         Cell(Address('C1'), 0),
-        Cell(Address('D34'), "Hello world"),
+        Cell(Address('D34'), '"Hello world"'),
         Cell(Address('D1'), 26),
     ])
     inter = CommandInterpreter(spr1)
@@ -98,3 +98,17 @@ def test_commands_with_operations_eval():
     assert spr1.cell(Address('D1')).value == 7
     inter.parse_command('D2=sum(A1:B4)-min(E1:E2)')
     assert spr1.cell(Address('D2')).value == 13
+
+
+def test_commands_update():
+    spr1 = Spreadsheet(cells=[
+        Cell(Address('B1'), 5),
+        Cell(Address('A1'), 4),
+        Cell(Address('E1'), -4),
+        Cell(Address('E2'), 6),
+        ])
+    inter = CommandInterpreter(spr1)
+    inter.parse_command('D1=B1+A1')
+    assert spr1.cell(Address('D1')).value == 9
+    inter.parse_command('A1=5')
+    assert spr1.cell(Address('D1')).value == 10
