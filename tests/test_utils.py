@@ -1,4 +1,5 @@
-from src.utils import get_combinations, get_ranges, flat_range_addresses
+from src.utils import (get_combinations, get_ranges, convert_vector_to_address,
+                       flat_range_addresses, convert_address_to_number)
 
 
 def test_getting_combinations():
@@ -25,3 +26,38 @@ def test_getting_flatted_address():
         ]
     adr = flat_range_addresses('A', 1, 'A', 2)
     assert adr == ['A1', 'A2']
+
+
+def test_converting_address_to_number():
+    tests = [
+        (('A', 1), (1, 1)),
+        (('O', 12), (15, 12)),
+        (('X', 6), (24, 6)),
+        (('AA', 2), (27, 2)),
+        (('BA', 123), (53, 123)),
+    ]
+    for test in tests:
+        vector = convert_address_to_number(*test[0])
+        assert vector == test[1]
+
+
+def test_converting_number_to_address():
+    tests = [
+        ((37466, 1), ('BCJZ', 1)),
+        ((25, 1), ('Y', 1)),
+        ((26, 1), ('Z', 1)),
+        ((81, 1), ('CC', 1)),
+        ((202, 1), ('GT', 1)),
+        ((1, 1), ('A', 1)),
+        ((37470, 1), ('BCKD', 1)),
+    ]
+    for test in tests:
+        vector = convert_vector_to_address(*test[0])
+        assert vector == test[1]
+
+
+def test_converting_numer_to_address_complex():
+    n = 100000
+    for i in range(1, n+1):
+        result = convert_address_to_number(*convert_vector_to_address(i, 1))
+        assert result == (i, 1)
