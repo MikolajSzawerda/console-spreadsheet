@@ -1,16 +1,20 @@
 from src.Cells import Cell
-from src.Addresses import Address
+from src.Addresses import Address, RangeAddress
 from src.Errors import CellNotInSpreadsheetError
 
 
 class Spreadsheet:
-    def __init__(self, range=None,
+    def __init__(self, range: "RangeAddress" = None,
                  cells: "list[Cell]" = None,
                  command_cells=None,
                  localization=None):
-
+        self._range = range
         self._cells = {}
         self.cells = cells
+
+    @property
+    def range(self) -> "RangeAddress":
+        return self._range
 
     @property
     def cells(self) -> "dict[Address, Cell]":

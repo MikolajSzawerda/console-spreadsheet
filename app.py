@@ -1,15 +1,13 @@
-from src.Spreadsheets import Spreadsheet
-from src.Commands import CommandInterpreter
+from config.spreadsheet_view_config import SPREADSHEET
+from src.SpreadsheetsViewes import SpreadsheetView
+import curses
+from curses import wrapper
+
 
 def main():
-    spr = Spreadsheet()
-    cmd_inter = CommandInterpreter(spr)
-    while True:
-        inp = input('>')
-        resp = cmd_inter.parse_command(inp)
-        print(resp)
-        print(spr.spreadsheet_view())
-
+    spr = SPREADSHEET
+    spr_view = SpreadsheetView(spr)
+    wrapper(spr_view.spreadsheet_view)
 
 
 if __name__ == '__main__':
