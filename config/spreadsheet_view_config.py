@@ -1,6 +1,7 @@
 from src.Addresses import Address, RangeAddress
 from src.Cells import Cell
 from src.Spreadsheets import Spreadsheet
+import curses
 
 
 SPREADSHEET = Spreadsheet(RangeAddress(Address('A1'), Address('AA40')), [
@@ -21,3 +22,4 @@ CELL_HEIGTH = 1
 ARROWS = [
     260, 259, 261, 258
 ]
+
