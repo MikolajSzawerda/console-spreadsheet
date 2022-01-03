@@ -1,7 +1,7 @@
 from src.Addresses import Address, RangeAddress
 from src.Spreadsheets import Spreadsheet
 from src.Cells import Cell
-from config.commands_config import commands, commands_names
+from config.commands_config import commands, commands_names, precedence
 from src.Errors import NoTargetCommandAddressError
 import re
 from tokenize import tokenize, TokenInfo
@@ -103,10 +103,31 @@ class CommandInterpreter():
                     token = self._shell_command_data(token, tokens)
                 output.append(token)
             elif token.type == 54:
-                if op_st:
-                    output.append(op_st.pop())
-                op_st.append(token)
-        output.extend(op_st)
+                opr = token.string
+                if opr == '(':
+                    op_st.append(token)
+                elif opr == ')':
+                    while op_st and op_st[-1].string != '(':
+                        output.append(op_st.pop())
+
+                    op_st.pop()
+                else:
+                    try:
+                        last_operator = op_st[-1].string
+                    except IndexError:
+                        last_operator = 0
+                    if precedence[opr] > precedence.get(last_operator, 0):
+                        op_st.append(token)
+                    else:
+                        while op_st and precedence[opr] <= precedence.get(last_operator, 0):
+                            output.append(op_st.pop())
+                            try:
+                                last_operator = op_st[-1].string
+                            except IndexError:
+                                last_operator = 0
+                        op_st.append(token)
+        if op_st:
+            output.extend(op_st[::-1])
         return output
 
     def _evaluate_expression(self, tokens: "list[TokenInfo]"):
@@ -162,7 +183,11 @@ class CommandInterpreter():
         '''
         number = 0
         if '.' in text_number:
-            number = float(text_number)
+            mantisa = text_number.split('.')[1]
+            if int(mantisa) == 0:
+                number = int(text_number)
+            else:
+                number = float(text_number)
         else:
             number = int(text_number)
         return number

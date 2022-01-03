@@ -9,3 +9,10 @@ commands = {
     'avg': lambda x: sum(x)/len(x),
 }
 commands_names = set(['avg', 'min', 'max', 'sum'])
+precedence = {
+    '+': 1,
+    '-': 1,
+    '*': 2,
+    '/': 2,
+    '^': 3,
+}
