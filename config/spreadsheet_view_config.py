@@ -4,7 +4,7 @@ from src.Spreadsheets import Spreadsheet
 import curses
 
 
-SPREADSHEET = Spreadsheet(RangeAddress(Address('A1'), Address('AA40')), [
+SPREADSHEET = Spreadsheet(RangeAddress(Address('A1'), Address('D4')), [
     Cell(Address('A1'), 2),
     Cell(Address('A2'), -5),
     Cell(Address('A3')),
@@ -22,4 +22,6 @@ CELL_HEIGTH = 1
 ARROWS = [
     260, 259, 261, 258
 ]
+
+TABLE_COOR = (4, 1)
 
