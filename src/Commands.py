@@ -41,7 +41,7 @@ class CommandInterpreter():
 
     def execute_command(self, command_stream: "str"):
         '''
-        Function for handling arithmetic operations, or returning text
+        Function for handling arithmetic operations, or returning text/number
         '''
         if command_stream[0] == '=':
             tokens = self.split_tokens(command_stream[1:])
@@ -51,21 +51,11 @@ class CommandInterpreter():
                 return self._convert_str_to_number(command_stream)
             except ValueError:
                 return command_stream
-        try:
-            return self._try_setting_text(command_stream)
-        except AttributeError:
-            pass
-        set_number = None
-        # if self._check_number(command_stream):
-        #     set_number = self._convert_str_to_number(command_stream)
-        # elif len(tokens) == 1 and self._check_number(tokens[0].string):
-        #     set_number = self._convert_str_to_number(tokens[0].string)
-        # if set_number:
-        #     return set_number
-        # value = self._evaluate_expression(tokens)
-        # return value
 
     def update(self):
+        '''
+        Function recalculates all cells in spreadsheet
+        '''
         for cell in self.spreadsheet.cells.values():
             cell.value = self.execute_command(cell._raw_data)
 

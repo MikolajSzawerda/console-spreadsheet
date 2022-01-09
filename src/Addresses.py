@@ -42,6 +42,9 @@ class Address:
         return True
 
     def move(self, vector, max_dim) -> "Address":
+        '''
+        Function transforms address by given vector in given bounds
+        '''
         adr_vector = convert_address_to_number(self.x, self.y)
         x_adr = adr_vector[0] + vector[0]
         y_adr = adr_vector[1] + vector[1]
@@ -77,6 +80,9 @@ class RangeAddress:
         return self._dimensions
 
     def _get_dimensions(self) -> 'tuple["int", "int"]':
+        '''
+        Function returns X, Y dimmensions of range
+        '''
         if self._adrX and self._adrY:
             a = convert_address_to_number(self._adrX.x, self._adrX.y)
             b = convert_address_to_number(self._adrY.x, self._adrY.y)

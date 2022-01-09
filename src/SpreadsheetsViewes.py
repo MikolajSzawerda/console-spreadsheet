@@ -7,6 +7,9 @@ from config.spreadsheet_view_config import CELL_WIDTH, CELL_HEIGTH, ARROWS, TABL
 
 
 class SpreadsheetView:
+    '''
+    Class for drawing Spreadsheet object in terminal
+    '''
     def __init__(self, spreadsheet: "Spreadsheet"):
         self._spreadsheet = spreadsheet
         self._command_inter = CommandInterpreter(self.spreadsheet)
@@ -18,6 +21,10 @@ class SpreadsheetView:
         return self._spreadsheet
 
     def _init_view(self, stdscr: "curses._CursesWindow"):
+        '''
+        Function creates colors definitions, three main windows
+        and their init look
+        '''
         curses.init_pair(4, curses.COLOR_BLACK, curses.COLOR_WHITE)
         curses.init_pair(3, curses.COLOR_BLACK, curses.COLOR_GREEN)
         curses.init_pair(2, curses.COLOR_WHITE, curses.COLOR_BLACK)
@@ -42,6 +49,9 @@ class SpreadsheetView:
         self._refresh(self._top_bar)
 
     def spreadsheet_view(self, stdscr: "curses._CursesWindow"):
+        '''
+        Main view function, handles spreadsheet movement
+        '''
         self._init_view(stdscr)
         while True:
             # self._spreadsheet_cells_win.clear()
@@ -54,6 +64,9 @@ class SpreadsheetView:
         stdscr.refresh()
 
     def _arrow_key_to_vector(self, char):
+        '''
+        Function convert arrow key to corresponding direction to move
+        '''
         if char == ARROWS[0]:
             return (-1, 0)
         elif char == ARROWS[1]:
@@ -64,14 +77,23 @@ class SpreadsheetView:
             return (0, 1)
 
     def _clear(self, windows: "list[curses._CursesWindow]"):
+        '''
+        Function clears all given windows
+        '''
         for window in windows:
             window.clear()
 
     def _refresh(self, windows: "list[curses._CursesWindow]"):
+        '''
+        Function refresh all given windows
+        '''
         for window in windows:
             window.refresh()
 
     def _border(self, windows: "list[curses._CursesWindow]", color=None):
+        '''
+        Function draw border for all given windows
+        '''
         for window in windows:
             if color:
                 window.attron(color)
@@ -80,6 +102,10 @@ class SpreadsheetView:
                 window.attroff(color)
 
     def _cursor_movement(self, arrow_key):
+        '''
+        Function for handling cursor movement around spreadsheet
+        Sets new cursor coors, and draw current cell
+        '''
         vector = self._arrow_key_to_vector(arrow_key)
         self._draw_cell(self._current_adr)
         new_adr = self._current_adr.move(vector, self._dimmensions)
@@ -94,6 +120,10 @@ class SpreadsheetView:
         self._refresh_table()
 
     def _edit_mode(self):
+        '''
+        Function for editing cells value
+        And updates spreadsheet view after edit
+        '''
         val = self.spreadsheet.cell(self._current_adr).value
         ctw = self._command_terminal_win
         line = str(val)
@@ -121,11 +151,17 @@ class SpreadsheetView:
         return
 
     def _refresh_table(self):
+        '''
+        Function dedicated for refreshing spreadsheet table view
+        '''
         y = self._table_y + TABLE_COOR[0]
         x = self._table_x + TABLE_COOR[1]
         self._spreadsheet_cells_win.refresh(0, 0, *TABLE_COOR, y, x)
 
     def _draw_table(self):
+        '''
+        Function draws all spreadsheet cells with coresponing values
+        '''
         table = self._spreadsheet_cells_win
         table.border()
         self._draw_labels()
@@ -136,6 +172,9 @@ class SpreadsheetView:
         self._refresh_table()
 
     def _draw_labels(self):
+        '''
+        Function draws rows and columns labels
+        '''
         table = self._spreadsheet_cells_win
         max_letter = self.spreadsheet.range._adrY.x
         bar = get_ranges('A', max_letter)
@@ -156,6 +195,10 @@ class SpreadsheetView:
             table.attroff(curses.color_pair(3))
 
     def _draw_cell(self, adress: "Address", color=None):
+        '''
+        Function refresh content in spreadsheet view
+        at corespomning address
+        '''
         val = self.spreadsheet.cell(adress).value
         cutted_val = str(val).replace('"', '')[:CELL_WIDTH-2]
         cell = f'|{cutted_val:^{CELL_WIDTH-2}}|'

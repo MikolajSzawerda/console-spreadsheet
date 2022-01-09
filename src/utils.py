@@ -3,6 +3,9 @@ import itertools
 
 
 def _letter_iter():
+    '''
+    Function generates excel-like alphabet iterate
+    '''
     for num in itertools.count(1):
         for letter in itertools.product(ascii_uppercase, repeat=num):
             yield ''.join(letter)
@@ -44,6 +47,9 @@ def flat_range_addresses(alA, nrA, alB, nrB):
 
 
 def convert_address_to_number(letters: "str", number: "str"):
+    '''
+    Function returns coordinates in number form of an address
+    '''
     letters_to_num = 0
     for letter in letters:
         letters_to_num = letters_to_num * 26 + (ord(letter) - 65) +1
@@ -51,6 +57,9 @@ def convert_address_to_number(letters: "str", number: "str"):
 
 
 def convert_vector_to_address(adr_x: "int", adr_y: "int"):
+    '''
+    Function returns excel like coors from given number coors
+    '''
     letter = ''
     while adr_x // 26:
         if adr_x == 26:
