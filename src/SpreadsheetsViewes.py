@@ -87,7 +87,7 @@ class SpreadsheetView:
         val = self.spreadsheet.cell(new_adr)._raw_data
         self._clear(self._top_bar)
         self._border(self._top_bar)
-        self._target_address_win.addstr(1, 1, f'{str(new_adr)}=')
+        self._target_address_win.addstr(1, 1, f'{str(new_adr)}')
         self._command_terminal_win.addstr(1, 1, f'{val}')
         self._refresh(self._top_bar)
         self._current_adr = new_adr
@@ -117,6 +117,7 @@ class SpreadsheetView:
             self._refresh([ctw])
         cmd = f'{self._current_adr}={line}'
         self._command_inter.parse_command(cmd)
+        self._draw_table()
         return
 
     def _refresh_table(self):
@@ -127,9 +128,6 @@ class SpreadsheetView:
     def _draw_table(self):
         table = self._spreadsheet_cells_win
         table.border()
-        for i in range(2, self._table_y-1):
-            for j in range(CELL_WIDTH+1, self._table_x-1, CELL_WIDTH):
-                table.addstr(i, j, f'|{"hui":^{CELL_WIDTH-2}}|')
         self._draw_labels()
         addrs = self.spreadsheet.range.addresses
         for adr in addrs:

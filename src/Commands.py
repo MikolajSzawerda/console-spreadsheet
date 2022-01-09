@@ -24,7 +24,7 @@ class CommandInterpreter():
         Function returns value from given address, or invokes function
         to handel arithmetic operations
         '''
-        tokens = cmd.split('=')
+        tokens = cmd.split('=', maxsplit=1)
         try:
             adr = Address(tokens[0])
         except IndexError:
@@ -33,7 +33,7 @@ class CommandInterpreter():
             return self.spreadsheet.cell(adr).value
         cell = Cell(adr)
         cell._raw_data = tokens[1]
-        response = self.execute_command(tokens[1])
+        response = self.execute_command(tokens[1]) if tokens[1] else ''
         cell.value = response
         self.spreadsheet.add_cells([cell])
         self.update()
@@ -43,20 +43,27 @@ class CommandInterpreter():
         '''
         Function for handling arithmetic operations, or returning text
         '''
+        if command_stream[0] == '=':
+            tokens = self.split_tokens(command_stream[1:])
+            return self._evaluate_expression(tokens)
+        else:
+            try:
+                return self._convert_str_to_number(command_stream)
+            except ValueError:
+                return command_stream
         try:
             return self._try_setting_text(command_stream)
         except AttributeError:
             pass
-        tokens = self.split_tokens(command_stream)
         set_number = None
-        if self._check_number(command_stream):
-            set_number = self._convert_str_to_number(command_stream)
-        elif len(tokens) == 1 and self._check_number(tokens[0].string):
-            set_number = self._convert_str_to_number(tokens[0].string)
-        if set_number:
-            return set_number
-        value = self._evaluate_expression(tokens)
-        return value
+        # if self._check_number(command_stream):
+        #     set_number = self._convert_str_to_number(command_stream)
+        # elif len(tokens) == 1 and self._check_number(tokens[0].string):
+        #     set_number = self._convert_str_to_number(tokens[0].string)
+        # if set_number:
+        #     return set_number
+        # value = self._evaluate_expression(tokens)
+        # return value
 
     def update(self):
         for cell in self.spreadsheet.cells.values():

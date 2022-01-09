@@ -69,15 +69,15 @@ def test_basic_numbers_operations():
     ])
     inter = CommandInterpreter(spr1)
     tests = [
-        ('A1=5-2*(45-128)', 171),
-        ('A1=2+5-6+8', 9),
-        ('A1=2*7', 14),
-        ('A1=10/5', 2),
-        ('A1=10*3-10/3', pytest.approx(26.66666666)),
-        ('A1=A2+A3-B6+2', -8),
-        ('A1=A2-A3', 16),
-        ('A1=A2', 4),
-        ('A1=A2*A3-D1*C1 + A3', -60),
+        ('A1==5-2*(45-128)', 171),
+        ('A1==2+5-6+8', 9),
+        ('A1==2*7', 14),
+        ('A1==10/5', 2),
+        ('A1==10*3-10/3', pytest.approx(26.66666666)),
+        ('A1==A2+A3-B6+2', -8),
+        ('A1==A2-A3', 16),
+        ('A1==A2', 4),
+        ('A1==A2*A3-D1*C1 + A3', -60),
     ]
     for test in tests:
         inter.parse_command(test[0])
@@ -87,7 +87,7 @@ def test_basic_numbers_operations():
 def test_commands_eval():
     spr1 = Spreadsheet(cells=[Cell(Address('B1'), -5)])
     inter = CommandInterpreter(spr1)
-    inter.parse_command('A1=min(A1:B4)')
+    inter.parse_command('A1==min(A1:B4)')
     assert spr1.cell(Address('A1')).value == -5
 
 
@@ -99,11 +99,11 @@ def test_commands_with_operations_eval():
         Cell(Address('E2'), 6),
         ])
     inter = CommandInterpreter(spr1)
-    inter.parse_command('D1=max(A1:B4)+2')
+    inter.parse_command('D1==max(A1:B4)+2')
     assert spr1.cell(Address('D1')).value == 7
-    inter.parse_command('D2=sum(A1:B4)-min(E1:E2)')
+    inter.parse_command('D2==sum(A1:B4)-min(E1:E2)')
     assert spr1.cell(Address('D2')).value == 13
-    inter.parse_command('D2=sum(A1:B1)*min(E1:E2)')
+    inter.parse_command('D2==sum(A1:B1)*min(E1:E2)')
     assert spr1.cell(Address('D2')).value == -36
 
 
@@ -115,7 +115,7 @@ def test_commands_update():
         Cell(Address('E2'), 6),
         ])
     inter = CommandInterpreter(spr1)
-    inter.parse_command('D1=B1+A1')
+    inter.parse_command('D1==B1+A1')
     assert spr1.cell(Address('D1')).value == 9
     inter.parse_command('A1=5')
     assert spr1.cell(Address('D1')).value == 10
