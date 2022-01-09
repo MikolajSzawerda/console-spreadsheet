@@ -44,13 +44,13 @@ class SpreadsheetView:
     def spreadsheet_view(self, stdscr: "curses._CursesWindow"):
         self._init_view(stdscr)
         while True:
-            self._spreadsheet_cells_win.clear()
+            # self._spreadsheet_cells_win.clear()
             pressed_key = self._spreadsheet_cells_win.get_wch()
             if pressed_key in ARROWS:
                 self._cursor_movement(pressed_key)
             if pressed_key == 'i':
                 self._edit_mode()
-            self._draw_table()
+            # self._draw_table()
         stdscr.refresh()
 
     def _arrow_key_to_vector(self, char):
@@ -81,9 +81,9 @@ class SpreadsheetView:
 
     def _cursor_movement(self, arrow_key):
         vector = self._arrow_key_to_vector(arrow_key)
-        # self._draw_cell(self._current_adr)
+        self._draw_cell(self._current_adr)
         new_adr = self._current_adr.move(vector, self._dimmensions)
-        # self._draw_cell(new_adr, curses.color_pair(4))
+        self._draw_cell(new_adr, curses.color_pair(4))
         val = self.spreadsheet.cell(new_adr)._raw_data
         self._clear(self._top_bar)
         self._border(self._top_bar)
@@ -91,6 +91,7 @@ class SpreadsheetView:
         self._command_terminal_win.addstr(1, 1, f'{val}')
         self._refresh(self._top_bar)
         self._current_adr = new_adr
+        self._refresh_table()
 
     def _edit_mode(self):
         val = self.spreadsheet.cell(self._current_adr).value
