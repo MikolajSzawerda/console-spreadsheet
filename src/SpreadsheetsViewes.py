@@ -99,12 +99,12 @@ class SpreadsheetView:
         self._border([ctw], curses.color_pair(1))
         self._refresh([ctw])
         while True:
-            key = self._command_terminal_win.getkey()
+            key = self._command_terminal_win.get_wch()
             if key == '\n':
                 self._border([ctw], curses.color_pair(2))
                 self._refresh([ctw])
                 break
-            if key == 'KEY_BACKSPACE':
+            elif key == 263:
                 line = line[:-1]
             else:
                 line += key
