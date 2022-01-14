@@ -42,7 +42,7 @@ class CommandInterpreter():
         else:
             try:
                 self.spreadsheet.remove_cells([adr])
-            except KeyError:
+            except Exception:
                 self.update()
                 return True
         self.update()
