@@ -1,5 +1,10 @@
 from string import ascii_uppercase
 import itertools
+import os
+from src.Errors import (UncorrectSpreadsheetPath,
+                        UncorrectSpreadsheetFileFormat,
+                        UncorrectSpreadsheetSize)
+import re
 
 
 def _letter_iter():
@@ -84,3 +89,23 @@ def convert_str_to_number(text_number: "str"):
     else:
         number = int(text_number)
     return number
+
+
+def check_file(path: "str", to_read: bool = False):
+    if to_read:
+        if not os.path.isfile(path):
+            raise UncorrectSpreadsheetPath(path)
+    if not path.endswith('.csv'):
+        raise UncorrectSpreadsheetFileFormat(os.path.basename(path))
+    return True
+
+
+def convert_to_range(size: "str"):
+    try:
+        x, y = re.split('[:,x,,|]', size)
+        x, y = int(x), int(y)
+        if (x <= 0) or (y <= 0):
+            raise UncorrectSpreadsheetSize(size)
+        return [str(x) for x in convert_vector_to_address(x, y)]
+    except Exception as e:
+        raise UncorrectSpreadsheetSize(size) from e

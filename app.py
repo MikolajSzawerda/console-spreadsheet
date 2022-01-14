@@ -13,10 +13,7 @@ def arguments_handler(args, parser: 'argparse.ArgumentParser') -> Spreadsheet:
     argv = parser.parse_args(args[1:])
     if argv.load_spreadsheet:
         path = argv.load_spreadsheet
-        try:
-            return SpreadsheetIO.load_spread_from_file(path)
-        except Exception:
-            print("Błąd :)")
+        return SpreadsheetIO.load_spread_from_file(path)
     elif argv.new_spreadsheet:
         localization = argv.new_spreadsheet[0]
         size = argv.new_spreadsheet[1]

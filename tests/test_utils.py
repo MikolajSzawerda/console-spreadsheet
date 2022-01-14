@@ -1,5 +1,6 @@
 from src.utils import (get_combinations, get_ranges, convert_vector_to_address,
-                       flat_range_addresses, convert_address_to_number)
+                       flat_range_addresses, convert_address_to_number, check_file)
+from src.Errors import UncorrectSpreadsheetFileFormat, UncorrectSpreadsheetPath
 
 
 def test_getting_combinations():
@@ -61,3 +62,4 @@ def test_converting_numer_to_address_complex():
     for i in range(1, n+1):
         result = convert_address_to_number(*convert_vector_to_address(i, 1))
         assert result == (i, 1)
+
