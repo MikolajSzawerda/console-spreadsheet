@@ -14,7 +14,7 @@ SPREADSHEET = Spreadsheet(RangeAddress(Address('A1'), Address('AA1000')), [
     Cell(Address('C1'), 5),
     Cell(Address('C2'), 1),
     Cell(Address('C3'), 69),
-])
+], localization='spreadsheet.csv')
 
 CELL_WIDTH = 20
 CELL_HEIGTH = 1
@@ -25,5 +25,5 @@ ARROWS = [
 
 TABLE_COOR = (4, 1)
 
-VIEW_SIZE = RangeAddress(Address('A1'), Address('C3'))
+VIEW_SIZE = RangeAddress(Address('A1'), Address('F10'))
 DEAFULT_NAME = 'spreadsheet.csv'

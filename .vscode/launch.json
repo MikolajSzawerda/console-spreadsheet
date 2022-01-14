@@ -10,7 +10,7 @@
             "request": "launch",
             "program": "${file}",
             "console": "integratedTerminal",
-            "args": ["-n", "spr2.csv", "2:2"]
+            // "args": ["-n", "spr2.csv", "2:2"]
         }
     ]
 }

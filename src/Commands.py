@@ -37,10 +37,15 @@ class CommandInterpreter():
         if bool(str(tokens[1])):
             if tokens[1][0] == '=':
                 cell.iscommand = True
-            response = self.execute_command(tokens[1]) if str(tokens[1]) else ''
-            cell.value = response
+            cell.value = self.execute_command(tokens[1])
             self.spreadsheet.add_cells([cell])
-            self.update()
+        else:
+            try:
+                self.spreadsheet.remove_cells([adr])
+            except KeyError:
+                self.update()
+                return True
+        self.update()
         return True
 
     def execute_command(self, command_stream: "str"):
@@ -60,20 +65,6 @@ class CommandInterpreter():
         for cell in self.spreadsheet.cells.values():
             if cell.iscommand:
                 cell.value = self.execute_command(cell._raw_data)
-
-    def _check_number(self, command_stream: "str"):
-        '''
-        Function checks if command is just a number
-        '''
-        check_if_number = re.compile('^-?\d*\.?\d*$')
-        return bool(re.match(check_if_number, command_stream))
-
-    def _try_setting_text(self, command_text: "str") -> "str":
-        '''
-        Function checks if given command is text, not an arithmetic
-        '''
-        check_if_text = re.compile('^\"(.*)\"$')
-        return re.match(check_if_text, command_text).group(0)
 
     def split_tokens(self, command_stream: "str"):
         '''

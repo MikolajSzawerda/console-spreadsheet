@@ -31,18 +31,6 @@ def test_setting_cell_text():
     assert spr1.cell(Address('A1')).value == '"very long uninteresting text"'
 
 
-def test_checking_if_number():
-    inter = CommandInterpreter(Spreadsheet())
-    assert inter._check_number('1234') is True
-    assert inter._check_number('-1234') is True
-    assert inter._check_number('0.12345') is True
-    assert inter._check_number('-0.3456') is True
-    assert inter._check_number('0') is True
-    assert inter._check_number('12.12.12') is False
-    assert inter._check_number('12f') is False
-    assert inter._check_number('-12.34d') is False
-
-
 def test_setting_cell_number():
     spr1 = Spreadsheet()
     inter = CommandInterpreter(spr1)
