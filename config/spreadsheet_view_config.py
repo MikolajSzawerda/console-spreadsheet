@@ -1,10 +1,12 @@
 from src.Addresses import Address, RangeAddress
 from src.Cells import Cell
 from src.Spreadsheets import Spreadsheet
-import curses
+
+adr1 = 'A1'
+adr2 = 'AAAAAAAAAAAAAAAAAA1000000000000000000000'
 
 
-SPREADSHEET = Spreadsheet(RangeAddress(Address('A1'), Address('AA1000')), [
+SPREADSHEET = Spreadsheet(RangeAddress(Address(adr1), Address(adr2)), [
     Cell(Address('A1'), 2),
     Cell(Address('A2'), -5),
     Cell(Address('A3')),

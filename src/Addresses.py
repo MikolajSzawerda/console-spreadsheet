@@ -61,16 +61,19 @@ class RangeAddress:
     def __init__(self, adrX: "Address" = None, adrY: "Address" = None):
         self._adrX = adrX
         self._adrY = adrY
-        self._addresses = []
+        self._addresses = list()
         self._dimensions = self._get_dimensions()
-        if (adrX and adrY):
-            addresses = flat_range_addresses(adrX.x, int(adrX.y),
-                                             adrY.x, int(adrY.y))
-            self._addresses = [Address(x) for x in addresses]
 
     @property
     def addresses(self) -> 'list[Address]':
+        if not self._addresses:
+            self._generate_addresses()
         return self._addresses
+
+    def _generate_addresses(self):
+        addresses = flat_range_addresses(self._adrX.x, int(self._adrX.y),
+                                         self._adrY.x, int(self._adrY.y))
+        self._addresses = [Address(x) for x in addresses]
 
     @property
     def dimensions(self):
@@ -85,7 +88,8 @@ class RangeAddress:
             return (0, 0)
 
     def split_addresses(self) -> 'tuple[list[str], list[str]]':
-        xy_adrs = [x._splitted_address for x in self.addresses]
+        adr = self.addresses
+        xy_adrs = [x._splitted_address for x in adr]
         split_adr = list(zip(*xy_adrs))
         letters = sorted(set(split_adr[0]), key=lambda x: (len(x), x))
         numbers = [str(x) for x in sorted(set([int(x) for x in split_adr[1]]))]

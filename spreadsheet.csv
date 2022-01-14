@@ -1,12 +1,12 @@
 spreadsheet.csv
-A1:AA1000
+A1:AAAAAA10
 address;value;raw_value
 A1;2;2
 A2;-5;-5
+A3;0;
 B1;"""Hello world""";"""Hello world"""
 B2;12;12
 B3;120;120
 C1;0;0
 C2;1;1
 C3;69;69
-C5;0;0

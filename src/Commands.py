@@ -2,8 +2,11 @@ from src.Addresses import Address, RangeAddress
 from src.Spreadsheets import Spreadsheet
 from src.Cells import Cell
 from config.commands_config import commands, commands_names, precedence
-from src.Errors import NoTargetCommandAddressError, UncorrectCommandName, UncorrectAddressAddressValue, UncorrectGivenCommandValues
-import re
+from src.Errors import (NoTargetCommandAddressError,
+                        UncorrectCommandName,
+                        UncorrectAddressAddressValue,
+                        UncorrectGivenCommandValues,
+                        RecursiveCommands)
 from tokenize import tokenize, TokenInfo
 from io import BytesIO
 from src.utils import convert_str_to_number
@@ -63,9 +66,13 @@ class CommandInterpreter():
                 return command_stream
 
     def update(self):
-        for cell in self.spreadsheet.cells.values():
-            if cell.iscommand:
-                self._assign_cell_value(cell, cell._raw_data)
+        commands = [x for x in self.spreadsheet.cells.values()
+                    if x.iscommand]
+        for cell in commands:
+            self._assign_cell_value(cell, cell._raw_data)
+
+    def _check_recursion(self, adr, commands):
+        pass
 
     def _assign_cell_value(self, cell: "Cell", cmd: str):
         try:
@@ -168,15 +175,21 @@ class CommandInterpreter():
         '''
         tp, start, end, ln = 2, token.start, token.end, token.line
         func = commands[token.string]
-        next(tokens)
-        adrA = next(tokens)
-        next(tokens)
-        adrB = next(tokens)
-        next(tokens)
-        range_adr = RangeAddress(Address(adrA.string),
-                                 Address(adrB.string))
-        val = self._calculate_command(func, range_adr)
-        token = TokenInfo(tp, val, start, end, ln)
+        try:
+            if next(tokens).string != '(':
+                raise Exception
+            adrA = next(tokens)
+            if next(tokens).string != ':':
+                raise Exception
+            adrB = next(tokens)
+            if next(tokens).string != ')':
+                raise Exception
+            range_adr = RangeAddress(Address(adrA.string),
+                                     Address(adrB.string))
+            val = self._calculate_command(func, range_adr)
+            token = TokenInfo(tp, val, start, end, ln)
+        except Exception:
+            raise UncorrectCommandName
         return token
 
     def _calculate_command(self, command, addres_range: "RangeAddress"):

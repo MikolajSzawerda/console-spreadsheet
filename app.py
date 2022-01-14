@@ -27,7 +27,8 @@ def main(args):
         'Create new spreadsheet at given localization and given size'
         ]
     files_group = parser.add_mutually_exclusive_group()
-    files_group.add_argument('-l', '--load_spreadsheet', help=help[0], metavar='localization')
+    files_group.add_argument('-l', '--load_spreadsheet',
+                             help=help[0], metavar='localization')
     files_group.add_argument('-n', '--new_spreadsheet', nargs=2, help=help[1],
                              metavar=('localization', 'size'))
     spr = arguments_handler(args, parser)

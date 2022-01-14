@@ -56,3 +56,8 @@ class UncorrectCommandName(UncorrectCommand):
 class UncorrectGivenCommandValues(UncorrectCommand):
     def __init__(self, *args: object) -> None:
         super().__init__(*args)
+
+
+class RecursiveCommands(UncorrectCommand):
+    def __init__(self, *args: object) -> None:
+        super().__init__(*args)

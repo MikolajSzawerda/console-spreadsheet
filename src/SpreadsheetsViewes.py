@@ -3,7 +3,7 @@ from src.Spreadsheets import Spreadsheet
 from src.Commands import CommandInterpreter
 from src.Spreadsheets_IO import SpreadsheetIO
 import curses
-from src.utils import get_ranges, convert_address_to_number, convert_vector_to_address
+from src.utils import convert_address_to_number, convert_vector_to_address
 from config.spreadsheet_view_config import CELL_WIDTH, CELL_HEIGTH, ARROWS, TABLE_COOR, VIEW_SIZE
 
 
@@ -12,7 +12,6 @@ class SpreadsheetView:
         self._spreadsheet = spreadsheet
         self._command_inter = CommandInterpreter(self.spreadsheet)
         self._spread_io = SpreadsheetIO(self.spreadsheet)
-        self._dimmensions = self.spreadsheet.range.dimensions
 
         self._view_range = VIEW_SIZE
         self._current_adr = self._view_range._adrX
@@ -41,11 +40,8 @@ class SpreadsheetView:
             convert_address_to_number(*self._view_range._adrX._splitted_address),
             convert_address_to_number(*self._view_range._adrY._splitted_address),
         )
-        # self._current_adr = self._view_range._adrX
         self._origin = self._spread_view[0]
         self._init_view(self._screen)
-
-
 
     def _init_view(self, stdscr: "curses._CursesWindow"):
         curses.init_pair(4, curses.COLOR_BLACK, curses.COLOR_WHITE)
@@ -55,8 +51,6 @@ class SpreadsheetView:
         stdscr.clear()
         curses.noecho()
         curses.curs_set(0)
-        # self._table_x = (self._dimmensions[0] + 1) * (CELL_WIDTH) + 2
-        # self._table_y = (self._dimmensions[1] + 1) * CELL_HEIGTH + 2
         self._table_x = (self._view_dimmensions[0] + 1) * (CELL_WIDTH) + 2
         self._table_y = (self._view_dimmensions[1] + 1) * CELL_HEIGTH + 2
         self._spreadsheet_cells_win = curses.newpad(self._table_y, self._table_x)
@@ -79,7 +73,6 @@ class SpreadsheetView:
         self._draw_cell(self._current_adr, curses.color_pair(4))
         self._refresh_table()
         while True:
-            # self._spreadsheet_cells_win.clear()
             pressed_key = self._spreadsheet_cells_win.get_wch()
             if pressed_key in ARROWS:
                 self._cursor_movement(pressed_key)
@@ -87,8 +80,6 @@ class SpreadsheetView:
                 self._edit_mode()
             if pressed_key == 's':
                 self._spread_io.save_file()
-            # self._draw_table()
-        stdscr.refresh()
 
     def _arrow_key_to_vector(self, char):
         if char == ARROWS[0]:
@@ -176,9 +167,6 @@ class SpreadsheetView:
 
     def _draw_labels(self):
         table = self._spreadsheet_cells_win
-        max_letter = self.spreadsheet.range._adrY.x
-        bar = get_ranges('A', max_letter)
-        bar.insert(0, '')
         letters, numbers = self._view_range.split_addresses()
         letters.insert(0, '')
         for k, i in enumerate(range(1, self._table_x-1, CELL_WIDTH)):
@@ -240,4 +228,3 @@ class SpreadsheetView:
             self.view_range = RangeAddress(x_range, y_range)
         adr_text = convert_vector_to_address(x_adr, y_adr)
         return Address(''.join([str(x) for x in adr_text]))
-
