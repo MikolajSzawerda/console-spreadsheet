@@ -11,7 +11,7 @@ SPREADSHEET = Spreadsheet(RangeAddress(Address('A1'), Address('AA1000')), [
     Cell(Address('B1'), '"Hello world"'),
     Cell(Address('B2'), 12),
     Cell(Address('B3'), 120),
-    Cell(Address('C1'), 5),
+    Cell(Address('C1'), 0),
     Cell(Address('C2'), 1),
     Cell(Address('C3'), 69),
 ], localization='spreadsheet.csv')

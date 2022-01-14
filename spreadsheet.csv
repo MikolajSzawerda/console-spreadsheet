@@ -3,11 +3,9 @@ A1:AA1000
 address;value;raw_value
 A1;2;2
 A2;-5;-5
-A3;0;
 B1;"""Hello world""";"""Hello world"""
 B2;12;12
-C1;5;5
+B3;120;120
+C1;0;0
 C2;1;1
 C3;69;69
-B4;1;1
-B5;13;=sum(B2:B4)
