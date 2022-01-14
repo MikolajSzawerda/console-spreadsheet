@@ -4,6 +4,8 @@ import csv
 from src.Cells import Cell
 from src.Addresses import RangeAddress, Address
 from src.utils import convert_str_to_number
+import re
+from src.utils import convert_vector_to_address
 
 
 class SpreadsheetIO():
@@ -56,6 +58,20 @@ class SpreadsheetIO():
                 cells.append(cell)
             spread = Spreadsheet(rangeAdr, cells, localization=loc)
             return spread
+
+    @staticmethod
+    def create_file(path: str, size: str) -> 'Spreadsheet':
+        x, y = re.split('[:,x,,|]', size)
+        res = [str(x) for x in convert_vector_to_address(int(x), int(y))]
+
+        adrY = Address(''.join(res))
+        adrX = Address('A1')
+        range_adr = RangeAddress(adrX, adrY)
+        spr = Spreadsheet(range_adr, localization=path)
+        SpreadsheetIO(spr).save_file()
+        return spr
+
+
 
 
 
