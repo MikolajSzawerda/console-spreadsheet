@@ -4,7 +4,7 @@ from src.Spreadsheets import Spreadsheet
 import curses
 
 
-SPREADSHEET = Spreadsheet(RangeAddress(Address('A1'), Address('F20')), [
+SPREADSHEET = Spreadsheet(RangeAddress(Address('A1'), Address('AA1000')), [
     Cell(Address('A1'), 2),
     Cell(Address('A2'), -5),
     Cell(Address('A3')),
@@ -25,3 +25,5 @@ ARROWS = [
 
 TABLE_COOR = (4, 1)
 
+VIEW_SIZE = RangeAddress(Address('A1'), Address('D7'))
+DEAFULT_NAME = 'spreadsheet.csv'

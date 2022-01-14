@@ -6,6 +6,7 @@ from src.Errors import NoTargetCommandAddressError
 import re
 from tokenize import tokenize, TokenInfo
 from io import BytesIO
+from src.utils import convert_str_to_number
 
 
 class CommandInterpreter():
@@ -33,31 +34,32 @@ class CommandInterpreter():
             return self.spreadsheet.cell(adr).value
         cell = Cell(adr)
         cell._raw_data = tokens[1]
-        response = self.execute_command(tokens[1]) if tokens[1] else ''
-        cell.value = response
-        self.spreadsheet.add_cells([cell])
-        self.update()
+        if bool(str(tokens[1])):
+            if tokens[1][0] == '=':
+                cell.iscommand = True
+            response = self.execute_command(tokens[1]) if str(tokens[1]) else ''
+            cell.value = response
+            self.spreadsheet.add_cells([cell])
+            self.update()
         return True
 
     def execute_command(self, command_stream: "str"):
         '''
-        Function for handling arithmetic operations, or returning text/number
+        Function for handling arithmetic operations, or returning text
         '''
         if command_stream[0] == '=':
             tokens = self.split_tokens(command_stream[1:])
             return self._evaluate_expression(tokens)
         else:
             try:
-                return self._convert_str_to_number(command_stream)
+                return convert_str_to_number(command_stream)
             except ValueError:
                 return command_stream
 
     def update(self):
-        '''
-        Function recalculates all cells in spreadsheet
-        '''
         for cell in self.spreadsheet.cells.values():
-            cell.value = self.execute_command(cell._raw_data)
+            if cell.iscommand:
+                cell.value = self.execute_command(cell._raw_data)
 
     def _check_number(self, command_stream: "str"):
         '''
@@ -141,7 +143,7 @@ class CommandInterpreter():
                 except Exception:
                     pass
             elif token.type == 2:
-                number = self._convert_str_to_number(token.string)
+                number = convert_str_to_number(token.string)
                 nb_stack.append(number)
             elif token.type == 54:
                 func = commands[token.string]
@@ -174,17 +176,4 @@ class CommandInterpreter():
         values = [self.spreadsheet.cell(x).value for x in adr]
         return str(command(values))
 
-    def _convert_str_to_number(self, text_number: "str"):
-        '''
-        Function converts string number for the most suitble data type
-        '''
-        number = 0
-        if '.' in text_number:
-            mantisa = text_number.split('.')[1]
-            if int(mantisa) == 0:
-                number = int(text_number)
-            else:
-                number = float(text_number)
-        else:
-            number = int(text_number)
-        return number
+

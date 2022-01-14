@@ -5,11 +5,11 @@ from src.utils import flat_range_addresses, convert_address_to_number, convert_v
 
 class Address:
     def __init__(self, address: "str"):
-        splitted_address = self._convert_to_xy(address)
+        self._splitted_address = self._convert_to_xy(address)
         self._address = address
         if self._validate_address(address):
-            self._x = str(splitted_address[0])
-            self._y = str(splitted_address[1])
+            self._x = str(self._splitted_address[0])
+            self._y = str(self._splitted_address[1])
 
     @property
     def x(self) -> "str":
@@ -41,19 +41,16 @@ class Address:
             raise UncorrectAddressAddressValue(address)
         return True
 
-    def move(self, vector, max_dim) -> "Address":
-        '''
-        Function transforms address by given vector in given bounds
-        '''
+    def move(self, vector, max_dim, min_dim) -> "Address":
         adr_vector = convert_address_to_number(self.x, self.y)
         x_adr = adr_vector[0] + vector[0]
         y_adr = adr_vector[1] + vector[1]
-        if x_adr <= 0:
-            x_adr = 1
+        if x_adr <= min_dim[0]:
+            x_adr = min_dim[0]
         if x_adr > max_dim[0]:
             x_adr = max_dim[0]
-        if y_adr <= 0:
-            y_adr = 1
+        if y_adr <= min_dim[1]:
+            y_adr = min_dim[1]
         if y_adr > max_dim[1]:
             y_adr = max_dim[1]
         adr_text = convert_vector_to_address(x_adr, y_adr)
@@ -80,15 +77,19 @@ class RangeAddress:
         return self._dimensions
 
     def _get_dimensions(self) -> 'tuple["int", "int"]':
-        '''
-        Function returns X, Y dimmensions of range
-        '''
         if self._adrX and self._adrY:
             a = convert_address_to_number(self._adrX.x, self._adrX.y)
             b = convert_address_to_number(self._adrY.x, self._adrY.y)
             return(abs(a[0]-b[0]) + 1, abs(a[1]-b[1]) + 1)
         else:
             return (0, 0)
+
+    def split_addresses(self) -> 'tuple[list[str], list[str]]':
+        xy_adrs = [x._splitted_address for x in self.addresses]
+        split_adr = list(zip(*xy_adrs))
+        letters = sorted(set(split_adr[0]), key=lambda x: (len(x), x))
+        numbers = [str(x) for x in sorted(set([int(x) for x in split_adr[1]]))]
+        return (letters, numbers)
 
     @classmethod
     def from_address_list(cls: "RangeAddress", addresses: "list[Address]") -> "RangeAddress":
