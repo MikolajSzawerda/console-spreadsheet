@@ -2,7 +2,7 @@ from src.Addresses import Address, RangeAddress
 from src.Spreadsheets import Spreadsheet
 from src.Cells import Cell
 from config.commands_config import commands, commands_names, precedence
-from src.Errors import NoTargetCommandAddressError
+from src.Errors import NoTargetCommandAddressError, UncorrectCommandName, UncorrectAddressAddressValue, UncorrectGivenCommandValues
 import re
 from tokenize import tokenize, TokenInfo
 from io import BytesIO
@@ -37,7 +37,7 @@ class CommandInterpreter():
         if bool(str(tokens[1])):
             if tokens[1][0] == '=':
                 cell.iscommand = True
-            cell.value = self.execute_command(tokens[1])
+            self._assign_cell_value(cell, tokens[1])
             self.spreadsheet.add_cells([cell])
         else:
             try:
@@ -54,7 +54,8 @@ class CommandInterpreter():
         '''
         if command_stream[0] == '=':
             tokens = self.split_tokens(command_stream[1:])
-            return self._evaluate_expression(tokens)
+            rpn_tokens = self._convert_to_postfix(tokens)
+            return self._evaluate_expression(rpn_tokens)
         else:
             try:
                 return convert_str_to_number(command_stream)
@@ -64,18 +65,26 @@ class CommandInterpreter():
     def update(self):
         for cell in self.spreadsheet.cells.values():
             if cell.iscommand:
-                cell.value = self.execute_command(cell._raw_data)
+                self._assign_cell_value(cell, cell._raw_data)
+
+    def _assign_cell_value(self, cell: "Cell", cmd: str):
+        try:
+            cell.value = self.execute_command(cmd)
+        except UncorrectCommandName:
+            cell.value = '#NAME?'
+        except ZeroDivisionError:
+            cell.value = '#DIV/0!'
+        except UncorrectGivenCommandValues:
+            cell.value = '#VALUE!'
 
     def split_tokens(self, command_stream: "str"):
         '''
-        Function divide command into tokens easy to handle,
-        and return token stack in RPN order
+        Function divide command into tokens easy to handle
         '''
-        tokenization = tokenize(
+        tokens = tokenize(
             BytesIO(command_stream.encode('utf-8')).readline
             )
-        postfix_tokens = self._convert_to_postfix(tokenization)
-        return postfix_tokens
+        return tokens
 
     def _convert_to_postfix(self, tokens: "list[TokenInfo]"):
         '''
@@ -88,9 +97,16 @@ class CommandInterpreter():
         output = []
         op_st = []
         for token in tokens:
-            if token.type in [1, 2]:
+            if token.type == 1:
                 if token.string in commands_names:
                     token = self._shell_command_data(token, tokens)
+                else:
+                    try:
+                        Address(token.string)
+                    except UncorrectAddressAddressValue:
+                        raise UncorrectCommandName
+                output.append(token)
+            elif token.type == 2:
                 output.append(token)
             elif token.type == 54:
                 opr = token.string
@@ -138,7 +154,11 @@ class CommandInterpreter():
                 nb_stack.append(number)
             elif token.type == 54:
                 func = commands[token.string]
-                val = func(nb_stack.pop(), nb_stack.pop())
+                try:
+                    val = func(nb_stack.pop(), nb_stack.pop())
+                except Exception:
+                    raise UncorrectGivenCommandValues
+
                 nb_stack.append(val)
         return nb_stack.pop()
 
@@ -165,6 +185,9 @@ class CommandInterpreter():
         '''
         adr = addres_range.addresses
         values = [self.spreadsheet.cell(x).value for x in adr]
-        return str(command(values))
+        try:
+            return str(command(values))
+        except Exception:
+            raise UncorrectGivenCommandValues
 
 

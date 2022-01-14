@@ -5,10 +5,10 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Python: Current File",
+            "name": "app.py",
             "type": "python",
             "request": "launch",
-            "program": "${file}",
+            "program": "app.py",
             "console": "integratedTerminal",
             // "args": ["-n", "spr2.csv", "2:2"]
         }

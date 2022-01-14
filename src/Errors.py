@@ -41,3 +41,18 @@ class UncorrectSpreadsheetSize(Exception):
     def __init__(self, size: str) -> None:
         msg = f'{size} nie jest prawidłowym wymiarem arkusza(format Number:Number)'
         super().__init__(msg)
+
+
+class UncorrectCommand(Exception):
+    def __init__(self, *args: object) -> None:
+        super().__init__(*args)
+
+
+class UncorrectCommandName(UncorrectCommand):
+    def __init__(self, *args: object) -> None:
+        super().__init__(*args)
+
+
+class UncorrectGivenCommandValues(UncorrectCommand):
+    def __init__(self, *args: object) -> None:
+        super().__init__(*args)

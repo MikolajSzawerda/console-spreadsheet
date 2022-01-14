@@ -1,8 +1,6 @@
-from ast import parse
 from src.Spreadsheets import Spreadsheet
 from config.spreadsheet_view_config import SPREADSHEET
 from src.SpreadsheetsViewes import SpreadsheetView
-import curses
 from curses import wrapper
 from src.Spreadsheets_IO import SpreadsheetIO
 import sys
