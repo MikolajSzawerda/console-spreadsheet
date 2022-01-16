@@ -1,6 +1,8 @@
 import re
 from src.Errors import UncorrectAddressAddressValue
-from src.utils import flat_range_addresses, convert_address_to_number, convert_vector_to_address
+from src.utils import (flat_range_addresses,
+                       convert_address_to_number,
+                       convert_vector_to_address)
 
 
 class Address:
@@ -70,6 +72,11 @@ class RangeAddress:
             self._generate_addresses()
         return self._addresses
 
+    def get_absolute_coor(self):
+        corner1 = convert_address_to_number(*self._adrX._splitted_address)
+        corner2 = convert_address_to_number(*self._adrY._splitted_address)
+        return (corner1, corner2)
+
     def _generate_addresses(self):
         addresses = flat_range_addresses(self._adrX.x, int(self._adrX.y),
                                          self._adrY.x, int(self._adrY.y))
@@ -96,7 +103,8 @@ class RangeAddress:
         return (letters, numbers)
 
     @classmethod
-    def from_address_list(cls: "RangeAddress", addresses: "list[Address]") -> "RangeAddress":
+    def from_address_list(cls: "RangeAddress",
+                          addresses: "list[Address]") -> "RangeAddress":
         range_adr = cls()
         range_adr._addresses = addresses
         return range_adr

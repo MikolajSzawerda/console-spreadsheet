@@ -16,12 +16,7 @@ class SpreadsheetView:
         self._view_range = VIEW_SIZE
         self._current_adr = self._view_range._adrX
         self._view_dimmensions = self._view_range.dimensions
-        x, y = self._current_adr._splitted_address
-        self._origin = convert_address_to_number(x, y)
-        self._spread_view = (
-            convert_address_to_number(*self._view_range._adrX._splitted_address),
-            convert_address_to_number(*self._view_range._adrY._splitted_address),
-        )
+        self._spread_view = self._view_range.get_absolute_coor()
 
     @property
     def spreadsheet(self) -> "Spreadsheet":
@@ -30,18 +25,6 @@ class SpreadsheetView:
     @property
     def view_range(self) -> "RangeAddress":
         return self._view_range
-
-    @view_range.setter
-    def view_range(self, range_adr: "RangeAddress"):
-        self._spreadsheet_cells_win.clear()
-        self._view_range = range_adr
-        self._view_dimmensions = self._view_range.dimensions
-        self._spread_view = (
-            convert_address_to_number(*self._view_range._adrX._splitted_address),
-            convert_address_to_number(*self._view_range._adrY._splitted_address),
-        )
-        self._origin = self._spread_view[0]
-        self._init_view(self._screen)
 
     def _init_view(self, stdscr: "curses._CursesWindow"):
         curses.init_pair(4, curses.COLOR_BLACK, curses.COLOR_WHITE)
@@ -90,13 +73,19 @@ class SpreadsheetView:
         max_adr_vector = [str(x) for x in convert_vector_to_address(x, y)]
         adr = Address(''.join(max_adr_vector))
         rang = RangeAddress(Address('A1'), adr)
-        self.view_range = rang
+        self._set_view_range(rang)
 
     def _get_max_dimmensions(self):
         y, x = self._screen.getmaxyx()
         max_y = abs(int((y-8)/CELL_HEIGTH))
         max_x = abs(int((x-10)/CELL_WIDTH)-1)
         return max_x, max_y
+
+    def _set_view_range(self, range_adr: "RangeAddress"):
+        self._view_range = range_adr
+        self._view_dimmensions = self._view_range.dimensions
+        self._spread_view = self._view_range.get_absolute_coor()
+        self._init_view(self._screen)
 
     def _arrow_key_to_vector(self, char):
         if char == ARROWS[0]:
@@ -127,9 +116,7 @@ class SpreadsheetView:
     def _cursor_movement(self, arrow_key):
         vector = self._arrow_key_to_vector(arrow_key)
         self._draw_cell(self._current_adr, curses.color_pair(0))
-        new_adr = self._transform_adr(self._current_adr, vector,
-                                      self._spread_view[1],
-                                      self._spread_view[0])
+        new_adr = self._transform_adr(self._current_adr, vector)
         self._draw_cell(new_adr, curses.color_pair(4))
         val = self.spreadsheet.cell(new_adr)._raw_data
         self._clear(self._top_bar)
@@ -205,7 +192,8 @@ class SpreadsheetView:
         cell = self.spreadsheet.cell(adress)
         val = cell.value if cell._raw_data else cell._raw_data
         formatted_cell = f'|{val:^{CELL_WIDTH-2}}|'
-        offset_adr = adress.move([-(x-1) for x in self._origin], self._view_dimmensions, (1, 1))
+        offset_adr = adress.move([-(x-1) for x in self._spread_view[0]],
+                                 self._view_dimmensions, (1, 1))
         num = convert_address_to_number(offset_adr.x, offset_adr.y)
         y = num[1] + 1
         x = num[0] * CELL_WIDTH + 1
@@ -217,8 +205,10 @@ class SpreadsheetView:
             self._spreadsheet_cells_win.attroff(curses.A_BOLD)
             self._spreadsheet_cells_win.attroff(color)
 
-    def _transform_adr(self, adr: "Address", vector, max_dim, min_dim) -> "Address":
+    def _transform_adr(self, adr: "Address", vector) -> "Address":
         adr_vector = convert_address_to_number(adr.x, adr.y)
+        max_dim = self._spread_view[1]
+        min_dim = self._spread_view[0]
         x_adr = adr_vector[0] + vector[0]
         y_adr = adr_vector[1] + vector[1]
         transform_vect = (0, 0)
@@ -235,13 +225,16 @@ class SpreadsheetView:
         if y_adr > max_dim[1]:
             y_adr = max_dim[1]
             transform_vect = (transform_vect[0], 1)
-        dim = self.spreadsheet.range.dimensions
-        x_range = self._view_range._adrX.move(transform_vect, dim, (1, 1))
-        y_range = self._view_range._adrY.move(transform_vect, dim, (1, 1))
-        new_range = RangeAddress(x_range, y_range)
-        len_predict = (len(new_range.addresses) == len(self._view_range.addresses))
-        vect_predict = any(x != 0 for x in transform_vect)
-        if len_predict and vect_predict:
-            self.view_range = RangeAddress(x_range, y_range)
+        self._move_spread_view(transform_vect)
         adr_text = convert_vector_to_address(x_adr, y_adr)
         return Address(''.join([str(x) for x in adr_text]))
+
+    def _move_spread_view(self, transform_vector):
+        dim = self.spreadsheet.range.dimensions
+        x_range = self._view_range._adrX.move(transform_vector, dim, (1, 1))
+        y_range = self._view_range._adrY.move(transform_vector, dim, (1, 1))
+        new_range = RangeAddress(x_range, y_range)
+        len_predict = (new_range.dimensions == self._view_range.dimensions)
+        vect_predict = any(x != 0 for x in transform_vector)
+        if len_predict and vect_predict:
+            self._set_view_range(RangeAddress(x_range, y_range))
