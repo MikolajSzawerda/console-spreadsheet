@@ -49,6 +49,7 @@ class SpreadsheetView:
         curses.init_pair(2, curses.COLOR_WHITE, curses.COLOR_BLACK)
         curses.init_pair(1, curses.COLOR_GREEN, curses.COLOR_BLACK)
         stdscr.clear()
+        stdscr.refresh()
         curses.noecho()
         curses.curs_set(0)
         self._table_x = (self._view_dimmensions[0] + 1) * (CELL_WIDTH) + 2
@@ -72,6 +73,7 @@ class SpreadsheetView:
         self._init_view(stdscr)
         self._draw_cell(self._current_adr, curses.color_pair(4))
         self._refresh_table()
+        self._set_max_spread_view()
         while True:
             pressed_key = self._spreadsheet_cells_win.get_wch()
             if pressed_key in ARROWS:
@@ -80,6 +82,21 @@ class SpreadsheetView:
                 self._edit_mode()
             if pressed_key == 's':
                 self._spread_io.save_file()
+            if pressed_key == 410:
+                self._set_max_spread_view()
+
+    def _set_max_spread_view(self):
+        x, y = self._get_max_dimmensions()
+        max_adr_vector = [str(x) for x in convert_vector_to_address(x, y)]
+        adr = Address(''.join(max_adr_vector))
+        rang = RangeAddress(Address('A1'), adr)
+        self.view_range = rang
+
+    def _get_max_dimmensions(self):
+        y, x = self._screen.getmaxyx()
+        max_y = abs(int((y-8)/CELL_HEIGTH))
+        max_x = abs(int((x-10)/CELL_WIDTH)-1)
+        return max_x, max_y
 
     def _arrow_key_to_vector(self, char):
         if char == ARROWS[0]:
