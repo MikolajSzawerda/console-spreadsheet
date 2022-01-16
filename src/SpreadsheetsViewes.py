@@ -70,9 +70,10 @@ class SpreadsheetView:
 
     def _set_max_spread_view(self):
         x, y = self._get_max_dimmensions()
-        max_adr_vector = [str(x) for x in convert_vector_to_address(x, y)]
-        adr = Address(''.join(max_adr_vector))
-        rang = RangeAddress(Address('A1'), adr)
+        corner = self._view_range._adrX
+        max_adr = corner.move((x-1, y-1),
+                              self.spreadsheet.range.dimensions, (1, 1))
+        rang = RangeAddress(corner, max_adr)
         self._set_view_range(rang)
 
     def _get_max_dimmensions(self):
@@ -85,6 +86,7 @@ class SpreadsheetView:
         self._view_range = range_adr
         self._view_dimmensions = self._view_range.dimensions
         self._spread_view = self._view_range.get_absolute_coor()
+        self._current_adr = range_adr._adrX
         self._init_view(self._screen)
 
     def _arrow_key_to_vector(self, char):
