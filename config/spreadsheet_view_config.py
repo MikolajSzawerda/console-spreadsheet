@@ -25,7 +25,7 @@ ARROWS = [
     260, 259, 261, 258
 ]
 
-TABLE_COOR = (4, 1)
+TABLE_COOR = (5, 1)
 
 VIEW_SIZE = RangeAddress(Address('A1'), Address('A1'))
 DEAFULT_NAME = 'spreadsheet.csv'

@@ -13,7 +13,7 @@ class SpreadsheetView:
         self._spreadsheet = spreadsheet
         self._command_inter = CommandInterpreter(self.spreadsheet)
         self._spread_io = SpreadsheetIO(self.spreadsheet)
-
+        self._saved = True
         self._view_range = VIEW_SIZE
         self._current_adr = self._view_range._adrX
         self._view_dimmensions = self._view_range.dimensions
@@ -27,6 +27,15 @@ class SpreadsheetView:
     def view_range(self) -> "RangeAddress":
         return self._view_range
 
+    @property
+    def saved(self) -> bool:
+        return self._saved
+
+    @saved.setter
+    def saved(self, val):
+        self._saved = val
+        self._draw_save_bar(val)
+
     def _init_view(self, stdscr: "curses._CursesWindow"):
         curses.init_pair(4, curses.COLOR_BLACK, curses.COLOR_WHITE)
         curses.init_pair(3, curses.COLOR_BLACK, curses.COLOR_GREEN)
@@ -39,8 +48,9 @@ class SpreadsheetView:
         self._table_x = (self._view_dimmensions[0] + 1) * (CELL_WIDTH) + 2
         self._table_y = (self._view_dimmensions[1] + 1) * CELL_HEIGTH + 2
         self._spreadsheet_cells_win = curses.newpad(self._table_y, self._table_x)
-        self._target_address_win = curses.newwin(3, 8, 1, 1)
-        self._command_terminal_win = curses.newwin(3, self._table_x-7, 1, 8)
+        self._save_win = curses.newwin(1, self._table_x, 1, 1)
+        self._target_address_win = curses.newwin(3, 8, 2, 1)
+        self._command_terminal_win = curses.newwin(3, self._table_x-7, 2, 8)
         self._top_bar = (self._target_address_win, self._command_terminal_win)
         self._command_terminal_win.keypad(1)
         self._spreadsheet_cells_win.keypad(1)
@@ -51,6 +61,17 @@ class SpreadsheetView:
         self._command_terminal_win.addstr(1, 1, f'{val}')
         self._draw_table()
         self._refresh(self._top_bar)
+        self._draw_save_bar(self.saved)
+
+    def _draw_save_bar(self, saved: bool):
+        star = '' if saved else '*'
+        msg = star+self._spreadsheet._localization
+        size = self._table_x-2
+        bar = f'{msg:^{size}}'
+        self._save_win.attron(curses.color_pair(4))
+        self._save_win.addstr(0, 1, bar)
+        self._save_win.attroff(curses.color_pair(4))
+        self._save_win.refresh()
 
     def spreadsheet_view(self, stdscr: "curses._CursesWindow"):
         self._screen = stdscr
@@ -58,14 +79,17 @@ class SpreadsheetView:
         self._set_max_spread_view()
         self._draw_cell(self._current_adr, curses.color_pair(4))
         self._refresh_table()
+        self._draw_save_bar(True)
         while True:
             pressed_key = self._spreadsheet_cells_win.get_wch()
             if pressed_key in ARROWS:
                 self._cursor_movement(pressed_key)
             if pressed_key == 'i':
                 self._edit_mode()
+                self.saved = False
             if pressed_key == 's':
                 self._spread_io.save_file()
+                self.saved = True
             if pressed_key == 'q':
                 sys.exit(0)
             if pressed_key == 410:
