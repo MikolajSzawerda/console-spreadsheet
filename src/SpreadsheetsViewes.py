@@ -5,6 +5,7 @@ from src.Spreadsheets_IO import SpreadsheetIO
 import curses
 from src.utils import convert_address_to_number, convert_vector_to_address
 from config.spreadsheet_view_config import CELL_WIDTH, CELL_HEIGTH, ARROWS, TABLE_COOR, VIEW_SIZE
+import sys
 
 
 class SpreadsheetView:
@@ -54,9 +55,9 @@ class SpreadsheetView:
     def spreadsheet_view(self, stdscr: "curses._CursesWindow"):
         self._screen = stdscr
         self._init_view(stdscr)
+        self._set_max_spread_view()
         self._draw_cell(self._current_adr, curses.color_pair(4))
         self._refresh_table()
-        self._set_max_spread_view()
         while True:
             pressed_key = self._spreadsheet_cells_win.get_wch()
             if pressed_key in ARROWS:
@@ -65,6 +66,8 @@ class SpreadsheetView:
                 self._edit_mode()
             if pressed_key == 's':
                 self._spread_io.save_file()
+            if pressed_key == 'q':
+                sys.exit(0)
             if pressed_key == 410:
                 self._set_max_spread_view()
 
@@ -75,6 +78,7 @@ class SpreadsheetView:
                               self.spreadsheet.range.dimensions, (1, 1))
         rang = RangeAddress(corner, max_adr)
         self._set_view_range(rang)
+        self._current_adr = self._view_range._adrX
 
     def _get_max_dimmensions(self):
         y, x = self._screen.getmaxyx()
@@ -86,7 +90,6 @@ class SpreadsheetView:
         self._view_range = range_adr
         self._view_dimmensions = self._view_range.dimensions
         self._spread_view = self._view_range.get_absolute_coor()
-        self._current_adr = range_adr._adrX
         self._init_view(self._screen)
 
     def _arrow_key_to_vector(self, char):
