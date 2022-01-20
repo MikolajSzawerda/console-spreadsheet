@@ -18,6 +18,10 @@ class SpreadsheetView:
         self._current_adr = self._view_range._adrX
         self._view_dimmensions = self._view_range.dimensions
         self._spread_view = self._view_range.get_absolute_coor()
+        curses.init_pair(4, curses.COLOR_BLACK, curses.COLOR_WHITE)
+        curses.init_pair(3, curses.COLOR_BLACK, curses.COLOR_GREEN)
+        curses.init_pair(2, curses.COLOR_WHITE, curses.COLOR_BLACK)
+        curses.init_pair(1, curses.COLOR_GREEN, curses.COLOR_BLACK)
 
     @property
     def spreadsheet(self) -> "Spreadsheet":
@@ -37,17 +41,17 @@ class SpreadsheetView:
         self._draw_save_bar(val)
 
     def _init_view(self, stdscr: "curses._CursesWindow"):
-        curses.init_pair(4, curses.COLOR_BLACK, curses.COLOR_WHITE)
-        curses.init_pair(3, curses.COLOR_BLACK, curses.COLOR_GREEN)
-        curses.init_pair(2, curses.COLOR_WHITE, curses.COLOR_BLACK)
-        curses.init_pair(1, curses.COLOR_GREEN, curses.COLOR_BLACK)
+        '''
+        Init all curses windows, determines spreadhseet size, and draws everything
+        '''
         stdscr.clear()
         stdscr.refresh()
         curses.noecho()
         curses.curs_set(0)
         self._table_x = (self._view_dimmensions[0] + 1) * (CELL_WIDTH) + 2
         self._table_y = (self._view_dimmensions[1] + 1) * CELL_HEIGTH + 2
-        self._spreadsheet_cells_win = curses.newpad(self._table_y, self._table_x)
+        self._spreadsheet_cells_win = curses.newpad(self._table_y,
+                                                    self._table_x)
         self._save_win = curses.newwin(1, self._table_x, 1, 1)
         self._target_address_win = curses.newwin(3, 8, 2, 1)
         self._command_terminal_win = curses.newwin(3, self._table_x-7, 2, 8)
@@ -64,6 +68,9 @@ class SpreadsheetView:
         self._draw_save_bar(self.saved)
 
     def _draw_save_bar(self, saved: bool):
+        '''
+        Draw save bar with file localization
+        '''
         star = '' if saved else '*'
         msg = star+self._spreadsheet._localization
         size = self._table_x-2
@@ -74,6 +81,9 @@ class SpreadsheetView:
         self._save_win.refresh()
 
     def spreadsheet_view(self, stdscr: "curses._CursesWindow"):
+        '''
+        Function handles all input from user
+        '''
         self._screen = stdscr
         self._init_view(stdscr)
         self._set_max_spread_view()
@@ -96,6 +106,9 @@ class SpreadsheetView:
                 self._set_max_spread_view()
 
     def _set_max_spread_view(self):
+        '''
+        Function set spreadsheet size to fit terminal size
+        '''
         x, y = self._get_max_dimmensions()
         corner = self._view_range._adrX
         max_adr = corner.move((x-1, y-1),
@@ -105,18 +118,27 @@ class SpreadsheetView:
         self._current_adr = self._view_range._adrX
 
     def _get_max_dimmensions(self):
+        '''
+        Function determines max spreadsheet size
+        '''
         y, x = self._screen.getmaxyx()
         max_y = abs(int((y-8)/CELL_HEIGTH))
         max_x = abs(int((x-10)/CELL_WIDTH)-1)
         return max_x, max_y
 
     def _set_view_range(self, range_adr: "RangeAddress"):
+        '''
+        Function updates all vars when changing spreadsheet size
+        '''
         self._view_range = range_adr
         self._view_dimmensions = self._view_range.dimensions
         self._spread_view = self._view_range.get_absolute_coor()
         self._init_view(self._screen)
 
     def _arrow_key_to_vector(self, char):
+        '''
+        Function converts arrow input to vector
+        '''
         if char == ARROWS[0]:
             return (-1, 0)
         elif char == ARROWS[1]:
@@ -143,6 +165,10 @@ class SpreadsheetView:
                 window.attroff(color)
 
     def _cursor_movement(self, arrow_key):
+        '''
+        Function draws current cursor cell, redraw old one,
+        and if needed invokes change of view range
+        '''
         vector = self._arrow_key_to_vector(arrow_key)
         self._draw_cell(self._current_adr, curses.color_pair(0))
         new_adr = self._transform_adr(self._current_adr, vector)
@@ -157,6 +183,9 @@ class SpreadsheetView:
         self._refresh_table()
 
     def _edit_mode(self):
+        '''
+        Function for editing cell value
+        '''
         val = self.spreadsheet.cell(self._current_adr)._raw_data
         ctw = self._command_terminal_win
         line = str(val)
@@ -199,6 +228,9 @@ class SpreadsheetView:
         self._refresh_table()
 
     def _draw_labels(self):
+        '''
+        Function draws rows and columns labels like in excel
+        '''
         table = self._spreadsheet_cells_win
         letters, numbers = self._view_range.split_addresses()
         letters.insert(0, '')
@@ -218,6 +250,9 @@ class SpreadsheetView:
             table.attroff(curses.color_pair(3))
 
     def _draw_cell(self, adress: "Address", color=None):
+        '''
+        Function redraw cell at given address including different view range
+        '''
         cell = self.spreadsheet.cell(adress)
         val = cell.value if cell._raw_data else cell._raw_data
         formatted_cell = f'|{val:^{CELL_WIDTH-2}}|'
@@ -235,6 +270,10 @@ class SpreadsheetView:
             self._spreadsheet_cells_win.attroff(color)
 
     def _transform_adr(self, adr: "Address", vector) -> "Address":
+        '''
+        Function handles address movement by vector including spreadsheet size
+        and current view range if needed function invokes change of view range
+        '''
         adr_vector = convert_address_to_number(adr.x, adr.y)
         max_dim = self._spread_view[1]
         min_dim = self._spread_view[0]
@@ -259,6 +298,9 @@ class SpreadsheetView:
         return Address(''.join([str(x) for x in adr_text]))
 
     def _move_spread_view(self, transform_vector):
+        '''
+        Function moves current view range by given vector
+        '''
         dim = self.spreadsheet.range.dimensions
         x_range = self._view_range._adrX.move(transform_vector, dim, (1, 1))
         y_range = self._view_range._adrY.move(transform_vector, dim, (1, 1))

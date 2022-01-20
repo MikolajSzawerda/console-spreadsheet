@@ -73,11 +73,17 @@ class RangeAddress:
         return self._addresses
 
     def get_absolute_coor(self):
+        '''
+        Function returns cooridnates of range where origin is A1
+        '''
         corner1 = convert_address_to_number(*self._adrX._splitted_address)
         corner2 = convert_address_to_number(*self._adrY._splitted_address)
         return (corner1, corner2)
 
     def _generate_addresses(self):
+        '''
+        Function generates and sets addresses that are in bounds of range
+        '''
         addresses = flat_range_addresses(self._adrX.x, int(self._adrX.y),
                                          self._adrY.x, int(self._adrY.y))
         self._addresses = [Address(x) for x in addresses]
@@ -87,6 +93,9 @@ class RangeAddress:
         return self._dimensions
 
     def _get_dimensions(self) -> 'tuple["int", "int"]':
+        '''
+        Function return # of columns and rows
+        '''
         if self._adrX and self._adrY:
             a = convert_address_to_number(self._adrX.x, self._adrX.y)
             b = convert_address_to_number(self._adrY.x, self._adrY.y)
@@ -95,6 +104,9 @@ class RangeAddress:
             return (0, 0)
 
     def split_addresses(self) -> 'tuple[list[str], list[str]]':
+        '''
+        Function returns all letters and numbers in range addresses
+        '''
         adr = self.addresses
         xy_adrs = [x._splitted_address for x in adr]
         split_adr = list(zip(*xy_adrs))
