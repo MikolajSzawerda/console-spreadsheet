@@ -3,6 +3,7 @@ commands = {
     '-': lambda x, y: y-x,
     '*': lambda x, y: y*x,
     '/': lambda x, y: y/x,
+    '^': lambda x, y: y**x,
     'min': lambda x: min(x),
     'max': lambda x: max(x),
     'sum': lambda x: sum(x),

@@ -18,10 +18,6 @@ class SpreadsheetView:
         self._current_adr = self._view_range._adrX
         self._view_dimmensions = self._view_range.dimensions
         self._spread_view = self._view_range.get_absolute_coor()
-        curses.init_pair(4, curses.COLOR_BLACK, curses.COLOR_WHITE)
-        curses.init_pair(3, curses.COLOR_BLACK, curses.COLOR_GREEN)
-        curses.init_pair(2, curses.COLOR_WHITE, curses.COLOR_BLACK)
-        curses.init_pair(1, curses.COLOR_GREEN, curses.COLOR_BLACK)
 
     @property
     def spreadsheet(self) -> "Spreadsheet":
@@ -44,6 +40,10 @@ class SpreadsheetView:
         '''
         Init all curses windows, determines spreadhseet size, and draws everything
         '''
+        curses.init_pair(4, curses.COLOR_BLACK, curses.COLOR_WHITE)
+        curses.init_pair(3, curses.COLOR_BLACK, curses.COLOR_GREEN)
+        curses.init_pair(2, curses.COLOR_WHITE, curses.COLOR_BLACK)
+        curses.init_pair(1, curses.COLOR_GREEN, curses.COLOR_BLACK)
         stdscr.clear()
         stdscr.refresh()
         curses.noecho()

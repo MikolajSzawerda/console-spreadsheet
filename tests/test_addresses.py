@@ -68,5 +68,5 @@ def test_moving_address_by_vector():
         (Address('C3'), (-2, -2), Address('A1')),
     ]
     for test in tests:
-        move = test[0].move(test[1], range_adr.dimensions)
+        move = test[0].move(test[1], range_adr.dimensions, (1, 1))
         assert move == test[2]

@@ -66,14 +66,3 @@ def test_setting_cell_val():
     assert spr1.cells[Address('A1')].value == 123
     assert spr1.cells[Address('B2')].value == -12
 
-
-def test_spreadsheet_view():
-    spr1 = Spreadsheet(cells=[
-        Cell(Address('A1'), -2),
-        Cell(Address('A2')),
-        Cell(Address('A3'), 3),
-        Cell(Address('A4'), 'hello world'),
-        ])
-    view = spr1.spreadsheet_view()
-    test = [('A1', -2), ('A2', 0), ('A3', 3), ('A4', 'hello world')]
-    assert view == test
