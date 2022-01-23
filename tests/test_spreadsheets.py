@@ -65,4 +65,3 @@ def test_setting_cell_val():
     spr1.set_cell_val(Address('B2'), -12)
     assert spr1.cells[Address('A1')].value == 123
     assert spr1.cells[Address('B2')].value == -12
-

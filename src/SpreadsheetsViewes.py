@@ -4,7 +4,8 @@ from src.Commands import CommandInterpreter
 from src.Spreadsheets_IO import SpreadsheetIO
 import curses
 from src.utils import convert_address_to_number, convert_vector_to_address
-from config.spreadsheet_view_config import CELL_WIDTH, CELL_HEIGTH, ARROWS, TABLE_COOR, VIEW_SIZE
+from config.spreadsheet_view_config import (CELL_WIDTH, CELL_HEIGTH,
+                                            ARROWS, TABLE_COOR, VIEW_SIZE)
 import sys
 
 
@@ -38,7 +39,8 @@ class SpreadsheetView:
 
     def _init_view(self, stdscr: "curses._CursesWindow"):
         '''
-        Init all curses windows, determines spreadhseet size, and draws everything
+        Init all curses windows, determines spreadhseet size,
+        and draws everything
         '''
         curses.init_pair(4, curses.COLOR_BLACK, curses.COLOR_WHITE)
         curses.init_pair(3, curses.COLOR_BLACK, curses.COLOR_GREEN)

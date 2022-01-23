@@ -1,5 +1,6 @@
 import re
-from src.Errors import UncorrectAddressAddressValue
+from src.Errors import (UncorrectAddressAddressValue,
+                        UncorrectRangeAddressBounds)
 from src.utils import (flat_range_addresses,
                        convert_address_to_number,
                        convert_vector_to_address)
@@ -44,6 +45,9 @@ class Address:
         return True
 
     def move(self, vector, max_dim, min_dim) -> "Address":
+        '''
+        Move address by given vector in given bound
+        '''
         adr_vector = convert_address_to_number(self.x, self.y)
         x_adr = adr_vector[0] + vector[0]
         y_adr = adr_vector[1] + vector[1]
@@ -61,10 +65,24 @@ class Address:
 
 class RangeAddress:
     def __init__(self, adrX: "Address" = None, adrY: "Address" = None):
-        self._adrX = adrX
-        self._adrY = adrY
-        self._addresses = list()
-        self._dimensions = self._get_dimensions()
+        if adrX and adrY:
+            if self._check_range_adr_corners(adrX, adrY):
+                self._adrX = adrX
+                self._adrY = adrY
+                self._addresses = list()
+                self._dimensions = self._get_dimensions()
+            else:
+                raise UncorrectRangeAddressBounds
+
+    @staticmethod
+    def _check_range_adr_corners(adr1: "Address", adr2: "Address"):
+        adr_vector1 = convert_address_to_number(adr1._x, adr1._y)
+        adr_vector2 = convert_address_to_number(adr2._x, adr2._y)
+        x_pred = (adr_vector1[0] <= adr_vector2[0])
+        y_pred = (adr_vector1[1] <= adr_vector2[1])
+        if x_pred and y_pred:
+            return True
+        return False
 
     @property
     def addresses(self) -> 'list[Address]':

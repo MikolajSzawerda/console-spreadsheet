@@ -51,7 +51,7 @@ def flat_range_addresses(alA, nrA, alB, nrB):
 def convert_address_to_number(letters: "str", number: "str"):
     letters_to_num = 0
     for letter in letters:
-        letters_to_num = letters_to_num * 26 + (ord(letter) - 65) +1
+        letters_to_num = letters_to_num * 26 + (ord(letter) - 65) + 1
     return (letters_to_num, int(number))
 
 

@@ -70,3 +70,17 @@ def test_moving_address_by_vector():
     for test in tests:
         move = test[0].move(test[1], range_adr.dimensions, (1, 1))
         assert move == test[2]
+
+
+def test_range_addres_correctness():
+    tests = [
+        (Address('A1'), Address('B2'), True),
+        (Address('A1'), Address('AAA1'), True),
+        (Address('D3'), Address('D3'), True),
+        (Address('B2'), Address('A1'), False),
+        (Address('A1'), Address('A123'), True),
+        (Address('A1'), Address('AA1'), True),
+    ]
+    for test in tests:
+        pred = RangeAddress._check_range_adr_corners(test[0], test[1])
+        assert pred is test[2]

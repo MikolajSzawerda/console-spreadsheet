@@ -153,17 +153,17 @@ potwierdzając enterem.
 
 * **Wprowadzanie komend**
 
-    *nazwa*(*początek zakresu komórek* **:** *koniec zakresu komórek*)
+*nazwa*(*początek zakresu komórek* **:** *koniec zakresu komórek*)
 
-    **Obsługiwane komendy:** min, max, avg, sum
+**Obsługiwane komendy:** min, max, avg, sum
 
-    np: **sum(A1:C3)**
+np: **sum(A1:C3)**
 
 * **Wprowadzanie wyrażenia**
 
-    Tak jak w excelu należy rozpocząć od **"="**
+Tak jak w excelu należy rozpocząć od **"="**
 
-    np: =sum(A1:C3)+12-A2*(C1/(4+3))
+np: =sum(A1:C3)+12-A2*(C1/(4+3))
 
 
 ## Część refleksyjna

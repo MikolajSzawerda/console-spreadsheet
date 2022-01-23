@@ -5,8 +5,7 @@ from config.commands_config import commands, commands_names, precedence
 from src.Errors import (NoTargetCommandAddressError,
                         UncorrectCommandName,
                         UncorrectAddressAddressValue,
-                        UncorrectGivenCommandValues,
-                        RecursiveCommands)
+                        UncorrectGivenCommandValues)
 from tokenize import tokenize, TokenInfo
 from io import BytesIO
 from src.utils import convert_str_to_number
@@ -169,7 +168,8 @@ class CommandInterpreter():
                 nb_stack.append(val)
         return convert_str_to_number(str(nb_stack.pop()))
 
-    def _shell_command_data(self, token: "TokenInfo", tokens: "list[TokenInfo]"):
+    def _shell_command_data(self, token: "TokenInfo",
+                            tokens: "list[TokenInfo]"):
         '''
         Function shells needed data to calculate a command
         '''
