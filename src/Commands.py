@@ -167,7 +167,7 @@ class CommandInterpreter():
                     raise UncorrectGivenCommandValues
 
                 nb_stack.append(val)
-        return nb_stack.pop()
+        return convert_str_to_number(str(nb_stack.pop()))
 
     def _shell_command_data(self, token: "TokenInfo", tokens: "list[TokenInfo]"):
         '''
@@ -202,5 +202,3 @@ class CommandInterpreter():
             return str(command(values))
         except Exception:
             raise UncorrectGivenCommandValues
-
-

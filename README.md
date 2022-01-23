@@ -2,36 +2,24 @@
 
 ## Cel i opis projektu
 
----
-
 Projekt polegał na zaimplementowaniu w pythonie konsolowego arkusza kalkulacyjnego. Program w założeniach miał umożliwiać:
 
+* Uruchomienie/utworzenie arkusza z pliku wraz z podpoleceniami,
 
-* utworzenie arkusza o zadanych wymiarach
+* Wprowadzanie do komórek wartości tekstowych i liczbowych, oraz funkcji
 
-* uruchomienie arkusza z podpoleceniami
+* wyliczanych na podstawie wartości z innych komórek i ich zakresów,
 
-* zapis arkusza do pliku
+* Adresowanie komórek identyczne jak w excelu,
 
-* odczyt arkusza z pliku
+* Wyświetlanie i bieżące odświeżania wartości komórek,
 
-* wprowadzanie do komórek wartości tekstowych i liczbowych
-
-* wprowadzanie do komórek funkcji wyliczanych na podstawie wartości z innych komórek
-
-* wprowadzanie do komórek funkcji wyliczanych na podstawie zakresów komórek
-
-* odnoszenie się do wartości komórek za pomocą adresowania identycznego jak w Excelu
-
-* wyświetlanie i bieżące odświeżania wartości komórek
+* Zapis i odczyt arkusza.
 
 ## Opis podziału programu na klasy
 
----
 
-### Addresses.py
-
-```Address```
+### ```Address```
 
 Klasa opisująca obiekt adresu, umożliwiająca:
 
@@ -39,7 +27,7 @@ Klasa opisująca obiekt adresu, umożliwiająca:
 
 * przesunięcie adresu o wektor liczbowy w zadanym obszarze ograniczającym
 
-```RangeAddress```
+### ```RangeAddress```
 
 Klasa opisująca obiekt zakresu adresów, umożliwiająca:
 
@@ -49,17 +37,13 @@ Klasa opisująca obiekt zakresu adresów, umożliwiająca:
 
 * robicie zakresu na litery i liczby wchodzące w skład adresów zakresu
 
-### Cells.py
-
-```Cell```
+### ```Cell```
 
 Klasa opisująca obiekt komórki arkusza, umożliwiająca:
 
 * podanie wartości komórki lub wpisanego weń polecenia
 
-### Spreadsheets.py
-
-```Spreadsheet```
+### ```Spreadsheet```
 
 Klasa opisująca obiekt arkusza, umożliwiająca:
 
@@ -69,9 +53,7 @@ Klasa opisująca obiekt arkusza, umożliwiająca:
 
 * podanie opisu każdej komórki (adres, wartość, "wartość tekstowa")
 
-### Spreadsheets_IO.py
-
-```SpreadsheetIO```
+### ```SpreadsheetIO```
 
 Klasa opisująca obiekt managera do operacji IO na arkuszu, umożliwiająca:
 
@@ -79,25 +61,21 @@ Klasa opisująca obiekt managera do operacji IO na arkuszu, umożliwiająca:
 
 * odczytania arkusza z pliku
 
-* utowrzenie arkusza o zadanych wymiarach i lokalizacji
+* utworzenie arkusza o zadanych wymiarach i lokalizacji
 
-### SpreadsheetViewes.py
-
-```SpreadsheetView```
+### ```SpreadsheetView```
 
 Klasa opisująca obiekt widoku arkusza, udostępniająca:
 
-* widok arkusza tak jak w excelu
+* widok arkusza w terminalu
 
 * wprowadzanie i edytowanie zawartości komórek
 
-* poruszanie się po arkuszu przy pomocy specjalnego kursora
+* poruszanie się po arkuszu przy pomocy kursora
 
 * skalowanie wielkości pokazywanego arkusza do wielkości konsoli
 
-### Commands.py
-
-```CommandInterpreter```
+### ```CommandInterpreter```
 
 Klasa opisująca obiekt interpretera poleceń, umożliwiająca:
 
@@ -108,7 +86,6 @@ Klasa opisująca obiekt interpretera poleceń, umożliwiająca:
 * przypisanie do podanej komórki wartości wyrażenia, liczby lub tekstu
 
 * odświeżenie wartości w arkuszu, po przez ponowne obliczenie zawartości komórek z komendami
-
 
 ### Errors.py
 
@@ -133,75 +110,68 @@ Skrypt posiadający definicje klas opisujących możliwe wyjątki:
 * ```UncorrectGivenCommandValues``` komenda wywołana z niepoprawnymi parametrami
 
 ## Instrukcja użytkownika
----
 
 ### Uruchomienie programu i podpolecenia
 
 **Brak podpoleceń**
 ```py
-python3 app.py
+python3 spreadsheet.py
 ```
-Program pokaże domyślny pusty arkusz, który przy zapisie zostanie utworzony pod nazwą "spreadsheet.py" w miejscu uruchomienia programu
+Program pokaże domyślny pusty arkusz, który przy zapisie zostanie utworzony pod nazwą "spreadsheet.csv" w miejscu uruchomienia programu
 
 **Podpolecenie -l**
 
 ```py
-python3 app.py -l ~/spr.csv
+python3 spreadsheet.py -l ~/spr.csv
 ```
 Program załaduje arkusz dostępny pod zadanym adresem, przy zapisie arkusze, będzie to również plik zapisu
 
 **Podpolecenie -n**
 
 ```py
-python3 app.py -n ~/spr.csv 10:10
+python3 spreadsheet.py -n ~/spr.csv 10:10
 ```
 
-Program utworzy i otworzy arkusz w wskazanej lokalizacji o rozmiarach podanych w formacie XxY lub X:Y, gdzie X,Y to ilość wierszy, kolumn
+Program utworzy i otworzy arkusz we wskazanej lokalizacji o rozmiarach podanych w formacie XxY lub X:Y, gdzie X,Y to ilość wierszy, kolumn
 
-### Nawigacja po arkuszu
+### Klawiszologia
 
-**Strzałki** : Służą do przesuwania kursora w wskazanym kierunku
+Nawigacja kursora : ***Strzałki***
 
-**Edycja zawartości komórki** : ***i***
+Edycja zawartości komórki : ***i***
 
-Po wciśnięciu program przechodzi w tryb edycji, gdzie w specjalnym podświetlonym na zielono polu użytkownik wprowadza nową wartość komórki
+Zapis stanu arkusza : ***s***
 
-**Zapis stanu arkusza** : ***s***
-
-Po każdorazowej edycji program wskazuje na możliwość zapisania nowej zawartości
-
-**Wyjście z programu** : ***q***
-
-Program wychodzi do konsoli
+Wyjście z programu : ***q***
 
 ### Wprowadzanie zawartości
 
-**Wprowadzanie tekstu i liczb**
+* **Wprowadzanie tekstu i liczb**
 
-Tak jak w excelu, wystarczy wprowadzić wartość
+Tak jak w excelu, wystarczy wprowadzić wartość, klikając uprzednio „i”, po edycji
+potwierdzając enterem.
 
-**Wprowadzanie komend**
+* **Wprowadzanie komend**
 
-*nazwa*(*początek zakresu komórek* **:** *koniec zakresu komórek*)
+    *nazwa*(*początek zakresu komórek* **:** *koniec zakresu komórek*)
 
-np: **sum(A1:C3)**
+    **Obsługiwane komendy:** min, max, avg, sum
 
-**Wprowadzanie wyrażenia**
+    np: **sum(A1:C3)**
 
-Tak jak w excelu należy rozpocząć od **"="**
+* **Wprowadzanie wyrażenia**
 
-np: =sum(A1:C3)+12-A2*(C1/(4+3))
+    Tak jak w excelu należy rozpocząć od **"="**
 
-**Obsługiwane komendy:** min, max, avg, sum
+    np: =sum(A1:C3)+12-A2*(C1/(4+3))
+
 
 ## Część refleksyjna
 
----
-
 ### Zakres wykonanych prac
 
-* wyświetlanie arkusza tak jak w excelu
-* poruszanie się po arkuszu, z przesuwaniem wyświetlanego zakresu arkusza
+* wyświetlanie arkusza podobnego wyglądem do excela
+* nawigajca po arkuszu, z przesuwaniem wyświetlanego zakresu arkusza
 * responsywna zmiana rozmiaru arkusza wraz z zmianą rozmiaru terminala
 * zaprojektowanie optymalnego systemu przechowywania zawartości akrusza
 * zaimplementowanie parsersa wyrażeń matematycznych z dostępem do zawartości innych komórek
@@ -220,10 +190,14 @@ Głównym powodem niezaimplementowania powyższych punktów był ograniczony zas
 
 ### Napotkane trudności
 
-Największy problem sprawiło mi napisanie systemu przesuwania widoku arkusza, kiedy kursor przechodził do niewidocznych komórek, a także zmiana rozmiaru arkusza przy zmianie rozmiaru terminala. Pewien problem stanowiło też zaimplementowanie parsera komend, z racji paru możliwych rodzaji wprowadzanych danych(liczba, tekst, wyrażenie) i samego wyliczenia wartości wyrażenia.
+Największy problem sprawiło mi napisanie systemu przesuwania widoku arkusza, kiedy kursor przechodził do niewidocznych komórek, a także zmiana rozmiaru arkusza przy zmianie rozmiaru terminala.
 
 ## Podsumowanie
 
-Uważam, że mój projekt zasługuje na wysoką ocenę, ponieważ w pełni spełnia podane wymagania funkcjonalne projektu, a także posiada parę dodatkowych funkcjonalności, jak np. dość rozbudowany system wyświetlania i poruszania się po arkuszu i responywny rozmiar to rozmiaru terminala. Ponadto starałem się wprowadzić optymalizacje wydajnościowe, takie jak przechowywanie tylko niepustych komórek w postaci słownika, jedynymi przeliczalnymi komórkami są komórki w którym są wyrażenia, zakresy komórek zaczynają przechowywać wszystkie dostępne w nich adresy, dopiero po pierwszej próbie uzyskania dostępu(dzięki temu arkusz może mieć potencjalnie nieskończony rozmiar), przy ruszaniu kursora przerysowaniu ulegają jedynie dwie komórki.
-
-Sam pomysł projektu był dla mnie interesujący i przyjemnie mi się nad nim pracowało.
+Uważam, że mój projekt zasługuje na wysoką ocenę, ponieważ w pełni spełnia podane
+wymagania funkcjonalne projektu, a także posiada parę dodatkowych funkcjonalności, jak
+np. dość rozbudowany system wyświetlania i poruszania się po arkuszu. Ponadto starałem
+się minimalizować złożoność obliczeniową, np. przy ruszaniu kursora przerysowywane są
+tylko dwie komórki, w słowniku arkusza znajdują się tylko komórki z danymi, a przeliczane
+ponownie są tylko komórki zawierające wyrażenie. Sam pomysł projektu był dla mnie
+interesujący i przyjemnie mi się nad nim pracowało.

@@ -83,7 +83,7 @@ def convert_str_to_number(text_number: "str"):
     if '.' in text_number:
         mantisa = text_number.split('.')[1]
         if int(mantisa) == 0:
-            number = int(text_number)
+            number = int(float(text_number))
         else:
             number = float(text_number)
     else:

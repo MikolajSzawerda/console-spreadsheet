@@ -1,5 +1,6 @@
 from src.utils import (get_combinations, get_ranges, convert_vector_to_address,
-                       flat_range_addresses, convert_address_to_number, check_file)
+                       flat_range_addresses, convert_address_to_number,
+                       convert_str_to_number)
 from src.Errors import UncorrectSpreadsheetFileFormat, UncorrectSpreadsheetPath
 
 
@@ -62,4 +63,15 @@ def test_converting_numer_to_address_complex():
     for i in range(1, n+1):
         result = convert_address_to_number(*convert_vector_to_address(i, 1))
         assert result == (i, 1)
+
+
+def test_converting_str_to_number_type():
+    result = convert_str_to_number('123.0')
+    assert isinstance(result, int)
+    result = convert_str_to_number(str(34/17))
+    assert isinstance(result, int)
+    result = convert_str_to_number('123')
+    assert isinstance(result, int)
+    result = convert_str_to_number('123.34')
+    assert isinstance(result, float)
 

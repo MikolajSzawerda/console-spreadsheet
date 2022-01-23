@@ -5,12 +5,12 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "app.py",
+            "name": "spreadsheet.py",
             "type": "python",
             "request": "launch",
-            "program": "app.py",
+            "program": "spreadsheet.py",
             "console": "integratedTerminal",
-            // "args": ["-n", "spr2.csv", "2:2"]
+            "args": ["-l", "spreadsheet.csv"]
         }
     ]
 }
